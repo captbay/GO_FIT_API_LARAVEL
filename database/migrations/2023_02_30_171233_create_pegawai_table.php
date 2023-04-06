@@ -13,13 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('pegawai', function (Blueprint $table) {
             $table->id();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->foreignId('id_users')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('no_pegawai');
+            $table->string('name');
+            $table->string('address');
+            $table->string('number_phone');
+            $table->date('born_date');
+            $table->string('gender');
             $table->string('role');
-            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -31,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('pegawai');
     }
 };
