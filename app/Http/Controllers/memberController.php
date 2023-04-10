@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\member;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use FontLib\Table\Type\name;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -207,5 +209,27 @@ class memberController extends Controller
             'success' => false,
             'message' => 'member Not Found',
         ], 404);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function generateMemberCard($id)
+    {
+        $member = member::find($id);
+
+        $data = [
+            'title' => 'GoFit',
+            'title2' => 'Member Card',
+            'address' => 'Jl. Centralpark No. 10, Yogyakarta',
+            'member' => $member
+        ];
+
+        $pdf = Pdf::loadview('memberCard', $data);
+
+        return $pdf->download('Member_Card.pdf');
     }
 }

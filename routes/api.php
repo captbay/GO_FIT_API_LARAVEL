@@ -24,6 +24,10 @@ Route::post('users/register', [authController::class, 'register']);
 Route::post('member/store', [memberController::class, 'store']);
 Route::post('member/aktivasi/{id}', [memberController::class, 'aktivasi']);
 
+
+//print pdf
+Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
+
 Route::group(['middleware' => 'auth:api'], function () {
     // user
     Route::apiResource(
