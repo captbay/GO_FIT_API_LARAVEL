@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\gym_booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class gym_bookingController extends Controller
 {
@@ -13,7 +15,13 @@ class gym_bookingController extends Controller
      */
     public function index()
     {
-        //
+        $gym_booking = gym_booking::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data gym_booking',
+            'data'    => $gym_booking
+        ], 200);
     }
 
     /**
@@ -24,7 +32,38 @@ class gym_bookingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //Validasi Formulir
+        $validator = Validator::make($request->all(), [
+            'id_gym' => 'required',
+            'id_member' => 'required',
+            'date_time' => 'required'
+        ]);
+
+        //response error validation
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $aktivasi_hitory = gym_booking::create([
+            'id_gym' => $request->id_gym,
+            'id_member' => $request->id_member,
+            'date_time' => $request->date_time
+        ]);
+
+        if ($aktivasi_hitory) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'gym_booking Created',
+                'data'    => $aktivasi_hitory
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'gym_booking Failed to Save',
+                'data'    => $aktivasi_hitory
+            ], 409);
+        }
     }
 
     /**
@@ -35,7 +74,15 @@ class gym_bookingController extends Controller
      */
     public function show($id)
     {
-        //
+        //find gym_booking by ID
+        $gym_booking = gym_booking::find($id);
+
+        //make response JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail Data gym_booking',
+            'data'    => $gym_booking
+        ], 200);
     }
 
     /**
@@ -47,7 +94,38 @@ class gym_bookingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $gym_booking = gym_booking::find($id);
+        if (!$gym_booking) {
+            //data gym_booking not found
+            return response()->json([
+                'success' => false,
+                'message' => 'gym_booking Not Found',
+            ], 404);
+        }
+        //validate form
+        $validator = Validator::make($request->all(), [
+            'id_gym' => 'required',
+            'id_member' => 'required',
+            'date_time' => 'required'
+        ]);
+
+        //response error validation
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        //update gym_booking with new image
+        $gym_booking->update([
+            'id_gym' => $request->id_gym,
+            'id_member' => $request->id_member,
+            'date_time' => $request->date_time
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'gym_booking Updated',
+            'data'    => $gym_booking
+        ], 200);
     }
 
     /**
@@ -58,6 +136,23 @@ class gym_bookingController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $gym_booking = gym_booking::find($id);
+
+        if ($gym_booking) {
+            //delete gym_booking
+            $gym_booking->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'gym_booking Deleted',
+            ], 200);
+        }
+
+
+        //data gym_booking not found
+        return response()->json([
+            'success' => false,
+            'message' => 'gym_booking Not Found',
+        ], 404);
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('pegawai', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_users')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_users')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade')->nullable();
             $table->string('no_pegawai');
             $table->string('name');
             $table->string('address');

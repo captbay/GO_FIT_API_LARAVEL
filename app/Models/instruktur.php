@@ -20,6 +20,11 @@ class instruktur extends Model
     protected $fillable = [
         'id_users',
         'no_instruktur',
+        'name',
+        'address',
+        'number_phone',
+        'born_date',
+        'gender',
         'total_late',
     ];
 

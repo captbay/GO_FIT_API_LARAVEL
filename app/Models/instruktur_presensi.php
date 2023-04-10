@@ -19,7 +19,7 @@ class instruktur_presensi extends Model
      */
     protected $fillable = [
         'id_instruktur',
-        'status_kelas',
+        'status_class',
         'start_class',
         'end_class',
         'date',

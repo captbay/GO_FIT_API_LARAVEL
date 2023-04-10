@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\class_detail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class class_detailController extends Controller
 {
-/**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $class_detail = class_detail::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data class_detail',
+            'data'    => $class_detail
+        ], 200);
     }
 
     /**
@@ -24,7 +32,36 @@ class class_detailController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //Validasi Formulir
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'price' => 'required',            'name' => 'required',
+        ]);
+
+        //response error validation
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $aktivasi_hitory = class_detail::create([
+            'name' => $request->name,
+            'price' => $request->price, 
+        ]);
+
+        if ($aktivasi_hitory) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'class_detail Created',
+                'data'    => $aktivasi_hitory
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'class_detail Failed to Save',
+                'data'    => $aktivasi_hitory
+            ], 409);
+        }
     }
 
     /**
@@ -35,7 +72,15 @@ class class_detailController extends Controller
      */
     public function show($id)
     {
-        //
+        //find class_detail by ID
+        $class_detail = class_detail::find($id);
+
+        //make response JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail Data class_detail',
+            'data'    => $class_detail
+        ], 200);
     }
 
     /**
@@ -47,7 +92,36 @@ class class_detailController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $class_detail = class_detail::find($id);
+        if (!$class_detail) {
+            //data class_detail not found
+            return response()->json([
+                'success' => false,
+                'message' => 'class_detail Not Found',
+            ], 404);
+        }
+        //validate form
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'price' => 'required',   
+        ]);
+
+        //response error validation
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        //update class_detail with new image
+        $class_detail->update([
+            'name' => $request->name,
+            'price' => $request->price, 
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'class_detail Updated',
+            'data'    => $class_detail
+        ], 200);
     }
 
     /**
@@ -58,6 +132,23 @@ class class_detailController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $class_detail = class_detail::find($id);
+
+        if ($class_detail) {
+            //delete class_detail
+            $class_detail->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'class_detail Deleted',
+            ], 200);
+        }
+
+
+        //data class_detail not found
+        return response()->json([
+            'success' => false,
+            'message' => 'class_detail Not Found',
+        ], 404);
     }
 }

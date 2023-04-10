@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('instruktur_presensi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_instruktur')->constrained('instruktur')->onUpdate('cascade')->onDelete('cascade');
-            $table->boolean('status_kelas');
+            $table->boolean('status_class');
             $table->time('start_class');
             $table->time('end_class');
             $table->date('date');

@@ -20,6 +20,11 @@ class pegawai extends Model
     protected $fillable = [
         'id_users',
         'no_pegawai',
+        'name',
+        'address',
+        'number_phone',
+        'born_date',
+        'gender',
         'role',
     ];
 

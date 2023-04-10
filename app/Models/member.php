@@ -20,6 +20,11 @@ class member extends Model
     protected $fillable = [
         'id_users',
         'no_member',
+        'name',
+        'address',
+        'number_phone',
+        'born_date',
+        'gender',
         'jumlah_deposit_reguler',
         'expired_date_membership',
         'status_membership',
