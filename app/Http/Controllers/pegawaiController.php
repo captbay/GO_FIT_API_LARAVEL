@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\pegawai;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class pegawaiController extends Controller
@@ -34,9 +37,7 @@ class pegawaiController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            'id_users' => 'required',
-            'no_pegawai' => 'required',
-            'name' => 'required',
+            'name' => 'required|unique:pegawai',
             'address' => 'required',
             'number_phone' => 'required',
             'born_date' => 'required',
@@ -49,9 +50,25 @@ class pegawaiController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = pegawai::create([
-            'id_users' => $request->id_users,
-            'no_pegawai' => $request->no_pegawai,
+        //membuatIddengan format(Xy) X= huruf dan Y = angka
+        $count = DB::table('pegawai')->count() + 1;
+        $id_generate = sprintf("%02d", $count);
+
+        //membuat password dengan format dmy
+        $datePass = Carbon::parse($request->born_date)->format('dmY');
+        $password = bcrypt($datePass);
+
+        //no pegawai
+        $no_pegawai = 'P' . $id_generate;
+
+        $user = User::create([
+            'username' => $no_pegawai,
+            'password' => $password,
+            'role' => 'pegawai'
+        ]);
+
+        $pegawai = $user->pegawai()->create([
+            'no_pegawai' => $no_pegawai,
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
@@ -60,18 +77,20 @@ class pegawaiController extends Controller
             'role' => $request->role,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($pegawai) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'pegawai Created',
-                'data'    => $aktivasi_hitory
+                'data diri pegawai'    => $pegawai,
+                'data user pegwai'    => $user
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'pegawai Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data diri pegawai'    => $pegawai,
+                'data user pegwai'    => $user
             ], 409);
         }
     }
@@ -114,14 +133,11 @@ class pegawaiController extends Controller
         }
         //validate form
         $validator = Validator::make($request->all(), [
-            'id_users' => 'required',
-            'no_pegawai' => 'required',
             'name' => 'required',
             'address' => 'required',
             'number_phone' => 'required',
             'born_date' => 'required',
             'gender' => 'required',
-            'role' => 'required',
         ]);
 
         //response error validation
@@ -129,16 +145,12 @@ class pegawaiController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        //update pegawai with new image
         $pegawai->update([
-            'id_users' => $request->id_users,
-            'no_pegawai' => $request->no_pegawai,
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
-            'role' => $request->role,
         ]);
 
         return response()->json([

@@ -45,25 +45,25 @@ class class_historyController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = class_history::create([
+        $class_history = class_history::create([
             'no_class_history' => $request->no_class_history,
             'id_class_booking' => $request->id_class_booking,
             'date_time' => $request->date_time,
             'sisa_deposit' => $request->sisa_deposit,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($class_history) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'class_history Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_history
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'class_history Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_history
             ], 409);
         }
     }

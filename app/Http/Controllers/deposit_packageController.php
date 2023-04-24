@@ -45,25 +45,25 @@ class deposit_packageController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = deposit_package::create([
+        $deposit_package = deposit_package::create([
             'id_class_detail' => $request->id_class_detail,
             'id_member' => $request->id_member,
             'package_amount' => $request->package_amount,
             'expired_date' => $request->expired_date,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($deposit_package) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'deposit_package Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $deposit_package
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'deposit_package Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $deposit_package
             ], 409);
         }
     }

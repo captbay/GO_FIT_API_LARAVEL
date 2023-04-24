@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\instruktur;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class instrukturController extends Controller
@@ -34,14 +37,11 @@ class instrukturController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            'id_users' => 'required',
-            'no_instruktur' => 'required',
-            'name' => 'required',
+            'name' => 'required|unique:instruktur',
             'address' => 'required',
             'number_phone' => 'required',
             'born_date' => 'required',
             'gender' => 'required',
-            'total_late' => 'required',
         ]);
 
         //response error validation
@@ -49,29 +49,47 @@ class instrukturController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = instruktur::create([
-            'id_users' => $request->id_users,
-            'no_instruktur' => $request->no_instruktur,
+        //membuatIddengan format(Xy) X= huruf dan Y = angka
+        $count = DB::table('instruktur')->count() + 1;
+        $id_generate = sprintf("%02d", $count);
+
+        //membuat password dengan format dmy
+        $datePass = Carbon::parse($request->born_date)->format('dmY');
+        $password = bcrypt($datePass);
+
+        //no instruktur
+        $no_instruktur = 'I' . $id_generate;
+
+        $user = User::create([
+            'username' => $no_instruktur,
+            'password' => $password,
+            'role' => 'instruktur'
+        ]);
+
+        $instruktur = $user->instruktur()->create([
+            'no_instruktur' => $no_instruktur,
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
-            'total_late' => $request->total_late,
+            // 'total_late' => $request->total_late, (buatin fungsi yang ngitung dari tabel presensi instruktur)
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($instruktur) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'instruktur Created',
-                'data'    => $aktivasi_hitory
+                'data diri instruktur'    => $instruktur,
+                'data user instruktur'    => $user
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'instruktur Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data diri instruktur'    => $instruktur,
+                'data user instruktur'    => $user
             ], 409);
         }
     }
@@ -114,14 +132,11 @@ class instrukturController extends Controller
         }
         //validate form
         $validator = Validator::make($request->all(), [
-            'id_users' => 'required',
-            'no_instruktur' => 'required',
             'name' => 'required',
             'address' => 'required',
             'number_phone' => 'required',
             'born_date' => 'required',
             'gender' => 'required',
-            'total_late' => 'required',
         ]);
 
         //response error validation
@@ -131,14 +146,11 @@ class instrukturController extends Controller
 
         //update instruktur with new image
         $instruktur->update([
-            'id_users' => $request->id_users,
-            'no_instruktur' => $request->no_instruktur,
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
-            'total_late' => $request->total_late,
         ]);
 
         return response()->json([

@@ -46,25 +46,25 @@ class gymController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = gym::create([
+        $gym = gym::create([
             'capacity' => $request->capacity,
             'date' => $request->date,
             'start_gym' => $request->start_gym,
             'end_gym' => $request->end_gym
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($gym) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'gym Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $gym
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'gym Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $gym
             ], 409);
         }
     }

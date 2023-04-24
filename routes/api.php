@@ -1,7 +1,13 @@
 <?php
 
 use App\Http\Controllers\authController;
+use App\Http\Controllers\class_detailController;
+use App\Http\Controllers\class_runningController;
+use App\Http\Controllers\instrukturController;
 use App\Http\Controllers\memberController;
+use App\Http\Controllers\pegawaiController;
+use App\Http\Controllers\promo_cashController;
+use App\Http\Controllers\promo_classController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,25 +23,58 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-//user 
+//auth
 Route::post('users/login', [authController::class, 'login']);
-Route::post('users/register', [authController::class, 'register']);
 
-Route::post('member/store', [memberController::class, 'store']);
-Route::post('member/aktivasi/{id}', [memberController::class, 'aktivasi']);
-
-
-//print pdf
-Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
-
+//harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
-    // user
+    //auth extention after login baru bisa akses
+    Route::post('users/updatePassword', [authController::class, 'updatePassword']);
+    Route::post('users/resetPassword', [authController::class, 'resetPassword']);
+    Route::post('users/logout', [authController::class, 'logout']);
+
+    //member
     Route::apiResource(
-        '/users',
-        \App\Http\Controllers\UserController::class
+        'member',
+        memberController::class
     );
-    Route::post('users/update/{id}', [UserController::class, 'update']);
-    Route::post('users/logout', [UserController::class, 'logout']);
+    Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
+
+    //instruktur
+    Route::apiResource(
+        'instruktur',
+        instrukturController::class
+    );
+
+    //pegawai
+    Route::apiResource(
+        'pegawai',
+        pegawaiController::class
+    );
+
+    //class_detail
+    Route::apiResource(
+        'class_detail',
+        class_detailController::class
+    );
+
+    //class_running
+    Route::apiResource(
+        'class_running',
+        class_runningController::class
+    );
+
+    //promo_cash
+    Route::apiResource(
+        'promo_cash',
+        promo_cashController::class
+    );
+
+    //promo_class
+    Route::apiResource(
+        'promo_class',
+        promo_classController::class
+    );
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -49,7 +49,7 @@ class deposit_package_historyController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = deposit_package_history::create([
+        $deposit_package_history = deposit_package_history::create([
             'no_deposit_package_history' => $request->no_deposit_package_history,
             'id_promo_class' => $request->id_promo_class,
             'id_member' => $request->id_member,
@@ -60,18 +60,18 @@ class deposit_package_historyController extends Controller
             'expired_date' => $request->expired_date
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($deposit_package_history) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'deposit_package_history Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $deposit_package_history
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'deposit_package_history Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $deposit_package_history
             ], 409);
         }
     }

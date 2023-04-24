@@ -46,7 +46,7 @@ class class_package_historyController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = class_package_history::create([
+        $class_package_history = class_package_history::create([
             'no_class_package_history' => $request->no_class_package_history,
             'id_class_booking' => $request->id_class_booking,
             'date_time' => $request->date_time,
@@ -54,18 +54,18 @@ class class_package_historyController extends Controller
             'expired_date' => $request->expired_date,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($class_package_history) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'class_package_history Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_package_history
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'class_package_history Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_package_history
             ], 409);
         }
     }

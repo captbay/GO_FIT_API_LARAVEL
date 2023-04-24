@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_users')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('no_instruktur');
-            $table->string('name');
+            $table->string('name')->unique();;
             $table->string('address');
             $table->string('number_phone');
             $table->date('born_date');

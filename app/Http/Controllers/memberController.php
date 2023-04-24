@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\member;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use FontLib\Table\Type\name;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class memberController extends Controller
@@ -37,16 +39,11 @@ class memberController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            // 'id_users' => 'required',
-            // 'no_member' => 'required',
-            'name' => 'required',
+            'name' => 'required|unique:member',
             'address' => 'required',
             'number_phone' => 'required',
             'born_date' => 'required',
             'gender' => 'required',
-            // 'jumlah_deposit_reguler' => 'required',
-            // 'expired_date_membership' => 'required',
-            // 'status_membership' => 'required',
         ]);
 
         //response error validation
@@ -54,17 +51,39 @@ class memberController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $member = member::create([
-            // 'id_users' => $request->id_users,
-            // 'no_member' => $request->no_member,
+        //membuatIddengan format(Xy) X= huruf dan Y = angka
+        $count = DB::table('member')->count() + 1;
+        $id_generate = sprintf("%03d", $count);
+
+        //membuat angka dengan format y
+        $digitYear = Carbon::parse(now())->format('y');
+
+        //membuat angka dengan format m
+        $digitMonth = Carbon::parse(now())->format('m');
+
+
+        //membuat password dengan format dmy
+        $datePass = Carbon::parse($request->born_date)->format('dmY');
+        $password = bcrypt($datePass);
+
+
+        //no member
+        $no_member = $digitYear . '.' . $digitMonth . '.' . $id_generate;
+
+
+        $user = User::create([
+            'username' => $no_member,
+            'password' => $password,
+            'role' => 'member'
+        ]);
+
+        $member = $user->member()->create([
+            'no_member' => $no_member,
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
-            // 'jumlah_deposit_reguler' => $request->jumlah_deposit_reguler,
-            // 'expired_date_membership' => $request->expired_date_membership,
-            // 'status_membership' => $request->status_membership,
         ]);
 
         if ($member) {
@@ -72,39 +91,41 @@ class memberController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'member Created',
-                'data'    => $member
+                'data diri member'    => $member,
+                'data user member'    => $user
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'member Failed to Save',
-                'data'    => $member
+                'data diri member'    => $member,
+                'data user member'    => $user
             ], 409);
         }
     }
 
-    public function aktivasi($id)
-    {
+    // public function aktivasi($id)
+    // {
 
-        //find member by ID
-        $member = member::find($id);
+    //     //find member by ID
+    //     $member = member::find($id);
 
-        $user = User::create([
-            'username' => '1234',
-            'password' => '123',
-            'role' => 'member'
-        ]);
+    //     $user = User::create([
+    //         'username' => '1234',
+    //         'password' => '123',
+    //         'role' => 'member'
+    //     ]);
 
-        $member->users()->associate($user);
-        $member->save();
+    //     $member->users()->associate($user);
+    //     $member->save();
 
-        //make response JSON
-        return response()->json([
-            'success' => true,
-            'message' => 'Detail Data member',
-            'data'    => $member
-        ], 200);
-    }
+    //     //make response JSON
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Detail Data member',
+    //         'data'    => $member
+    //     ], 200);
+    // }
 
 
     /**
@@ -145,16 +166,11 @@ class memberController extends Controller
         }
         //validate form
         $validator = Validator::make($request->all(), [
-            'id_users' => 'required',
-            'no_member' => 'required',
             'name' => 'required',
             'address' => 'required',
             'number_phone' => 'required',
             'born_date' => 'required',
             'gender' => 'required',
-            'jumlah_deposit_reguler' => 'required',
-            'expired_date_membership' => 'required',
-            'status_membership' => 'required',
         ]);
 
         //response error validation
@@ -164,16 +180,11 @@ class memberController extends Controller
 
         //update member with new image
         $member->update([
-            'id_users' => $request->id_users,
-            'no_member' => $request->no_member,
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
-            'jumlah_deposit_reguler' => $request->jumlah_deposit_reguler,
-            'expired_date_membership' => $request->expired_date_membership,
-            'status_membership' => $request->status_membership,
         ]);
 
         return response()->json([
@@ -230,6 +241,6 @@ class memberController extends Controller
 
         $pdf = Pdf::loadview('memberCard', $data);
 
-        return $pdf->download('Member_Card.pdf');
+        return $pdf->download('Member_Card_' . $member->name . '.pdf');
     }
 }

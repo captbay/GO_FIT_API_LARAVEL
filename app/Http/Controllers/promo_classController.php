@@ -45,25 +45,25 @@ class promo_classController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = promo_class::create([
+        $promo_class = promo_class::create([
             'id_class_detail' => $request->id_class_detail,
             'jumlah_sesi' => $request->jumlah_sesi,
             'bonus_sesi' => $request->bonus_sesi,
             'durasi_aktif' => $request->durasi_aktif,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($promo_class) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'promo_class Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $promo_class
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'promo_class Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $promo_class
             ], 409);
         }
     }

@@ -44,24 +44,24 @@ class gym_bookingController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = gym_booking::create([
+        $gym_booking = gym_booking::create([
             'id_gym' => $request->id_gym,
             'id_member' => $request->id_member,
             'date_time' => $request->date_time
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($gym_booking) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'gym_booking Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $gym_booking
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'gym_booking Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $gym_booking
             ], 409);
         }
     }

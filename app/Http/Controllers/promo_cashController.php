@@ -44,24 +44,24 @@ class promo_cashController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = promo_cash::create([
+        $promo_cash = promo_cash::create([
             'min_deposit_cash' => $request->min_deposit_cash,
             'min_topup_cash' => $request->min_topup_cash,
             'bonus_cash' => $request->bonus_cash,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($promo_cash) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'promo_cash Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $promo_cash
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'promo_cash Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $promo_cash
             ], 409);
         }
     }

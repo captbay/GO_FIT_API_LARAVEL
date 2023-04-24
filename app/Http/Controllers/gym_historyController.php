@@ -44,24 +44,24 @@ class gym_historyController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = gym_history::create([
+        $gym_history = gym_history::create([
             'no_gym_history' => $request->no_gym_history,
             'id_gym_booking' => $request->id_gym_booking,
             'date_time' => $request->date_time,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($gym_history) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'gym_history Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $gym_history
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'gym_history Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $gym_history
             ], 409);
         }
     }

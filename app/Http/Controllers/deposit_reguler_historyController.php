@@ -50,7 +50,7 @@ class deposit_reguler_historyController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = deposit_reguler_history::create([
+        $deposit_reguler_history = deposit_reguler_history::create([
             'no_deposit_reguler_history' => $request->no_deposit_reguler_history,
             'id_promo_cash' => $request->id_promo_cash,
             'id_member' => $request->id_member,
@@ -62,18 +62,18 @@ class deposit_reguler_historyController extends Controller
             'total' => $request->total
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($deposit_reguler_history) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'deposit_reguler_history Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $deposit_reguler_history
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'deposit_reguler_history Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $deposit_reguler_history
             ], 409);
         }
     }

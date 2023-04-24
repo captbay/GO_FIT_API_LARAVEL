@@ -47,7 +47,7 @@ class aktivasi_historyController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = aktivasi_history::create([
+        $aktivasi_history = aktivasi_history::create([
             'no_aktivasi_history' => $request->no_aktivasi_history,
             'id_member' => $request->id_member,
             'id_pegawai' => $request->id_pegawai,
@@ -55,18 +55,18 @@ class aktivasi_historyController extends Controller
             'expired_date' => $request->date_time,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($aktivasi_history) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'aktivasi_history Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $aktivasi_history
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'aktivasi_history Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $aktivasi_history
             ], 409);
         }
     }

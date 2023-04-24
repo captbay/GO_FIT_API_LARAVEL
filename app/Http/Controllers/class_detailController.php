@@ -35,7 +35,7 @@ class class_detailController extends Controller
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'price' => 'required',            'name' => 'required',
+            'price' => 'required',
         ]);
 
         //response error validation
@@ -43,23 +43,23 @@ class class_detailController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = class_detail::create([
+        $class_detail = class_detail::create([
             'name' => $request->name,
-            'price' => $request->price, 
+            'price' => $request->price,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($class_detail) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'class_detail Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_detail
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'class_detail Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_detail
             ], 409);
         }
     }
@@ -103,7 +103,7 @@ class class_detailController extends Controller
         //validate form
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'price' => 'required',   
+            'price' => 'required',
         ]);
 
         //response error validation
@@ -114,7 +114,7 @@ class class_detailController extends Controller
         //update class_detail with new image
         $class_detail->update([
             'name' => $request->name,
-            'price' => $request->price, 
+            'price' => $request->price,
         ]);
 
         return response()->json([

@@ -46,7 +46,7 @@ class instruktur_presensi_presensiController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = instruktur_presensi::create([
+        $instruktur_presensi = instruktur_presensi::create([
             'id_instruktur' => $request->id_instruktur,
             'status_class' => $request->status_class,
             'start_class' => $request->start_class,
@@ -54,18 +54,18 @@ class instruktur_presensi_presensiController extends Controller
             'date' => $request->date,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($instruktur_presensi) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'instruktur_presensi Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $instruktur_presensi
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'instruktur_presensi Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $instruktur_presensi
             ], 409);
         }
     }

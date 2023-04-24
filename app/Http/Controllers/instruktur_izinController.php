@@ -46,7 +46,7 @@ class instruktur_izin_izinController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = instruktur_izin::create([
+        $instruktur_izin = instruktur_izin::create([
             'id_instruktur' => $request->id_instruktur,
             'id_instruktur_pengganti' => $request->id_instruktur_pengganti,
             'id_class_running' => $request->id_class_running,
@@ -54,18 +54,18 @@ class instruktur_izin_izinController extends Controller
             'is_confirm' => $request->is_confirm,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($instruktur_izin) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'instruktur_izin Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $instruktur_izin
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'instruktur_izin Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $instruktur_izin
             ], 409);
         }
     }

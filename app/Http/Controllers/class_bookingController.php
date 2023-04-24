@@ -45,24 +45,24 @@ class class_bookingController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $aktivasi_hitory = class_booking::create([
+        $class_booking = class_booking::create([
             'id_class_running' => $request->id_class_running,
             'id_member' => $request->id_member,
             'date_time' => $request->date_time,
         ]);
 
-        if ($aktivasi_hitory) {
+        if ($class_booking) {
 
             return response()->json([
                 'success' => true,
                 'message' => 'class_booking Created',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_booking
             ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'class_booking Failed to Save',
-                'data'    => $aktivasi_hitory
+                'data'    => $class_booking
             ], 409);
         }
     }
