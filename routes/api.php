@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 //auth
 Route::post('users/login', [authController::class, 'login']);
+Route::post('users/store/admin', [authController::class, 'registerAdmin']);
 
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {

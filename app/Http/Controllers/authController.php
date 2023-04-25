@@ -60,14 +60,14 @@ class authController extends Controller
                     'token_type' => 'Bearer',
                     'access_token' => $token
                 ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Authenticated as a admin',
+                    'user' => $user,
+                    'token_type' => 'Bearer',
+                    'access_token' => $token
+                ], 200);
             }
-
-            // return response()->json([
-            //     'message' => 'Authenticated',
-            //     'user' => $user,
-            //     'token_type' => 'Bearer',
-            //     'access_token' => $token
-            // ], 200);
         } else {
             return response()->json([
                 'success' => false,
@@ -164,77 +164,46 @@ class authController extends Controller
 
 
 
-    // /**
-    //  * store
-    //  *
-    //  * @param Request $request
-    //  * @return void
-    //  */
-    // public function register(Request $request)
-    // {
-    //     //Validasi Formulir
-    //     $validator = Validator::make($request->all(), [
-    //         'username' => 'required|unique:users',
-    //         'password' => 'optional',
-    //         'role' => 'required',
-    //         'name' => 'required',
-    //         'address' => 'required',
-    //         'number_phone' => 'required',
-    //         'born_date' => 'required',
-    //         'gender' => 'required',
-    //     ]);
+    /**
+     * store
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function registerAdmin(Request $request)
+    {
+        //Validasi Formulir
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|unique:users',
+            'password' => 'required',
+            'role' => 'required',
+        ]);
 
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 422);
-    //     }
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-    //     if ($request->role == 'member') {
-    //         $user = User::create([
-    //             'username' => $request->username,
-    //             'password' => $request->password,
-    //             'role' => $request->role,
-    //         ]);
+        $password = bcrypt($request->password);
 
-    //         $member = $user->member()->create([
-    //             'name' => $request->name,
-    //             'address' => $request->address,
-    //             'number_phone' => $request->number_phone,
-    //             'born_date' => $request->born_date,
-    //             'gender' => $request->gender,
-    //         ]);
-
-    //         if ($member) {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => 'Registration successful',
-    //                 'data'    => $user
-    //             ], 201);
-    //         }
-    //     }
-
-    //     // $password = bcrypt($request->password);
-
-    //     // $user = User::create([
-    //     //     'username' => $request->username,
-    //     //     'password' => $password,
-    //     //     'role' => $request->role,
-    //     // ]);
-
-    //     $user->sendApiEmailVerificationNotification();
-    //     // event(new Registered($user));
-    //     //Redirect jika berhasil mengirim email
-    //     if ($user) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Registration successful',
-    //             'data'    => $user
-    //         ], 201);
-    //     } else {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'User Failed to Save',
-    //             'data'    => $user
-    //         ], 409);
-    //     }
-    // }
+        $user = User::create([
+            'username' => $request->username,
+            'password' => $password,
+            'role' => $request->role,
+        ]);
+        // event(new Registered($user));
+        //Redirect jika berhasil mengirim email
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration admin successful',
+                'data'    => $user
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'admin Failed to Save',
+                'data'    => $user
+            ], 409);
+        }
+    }
 }
