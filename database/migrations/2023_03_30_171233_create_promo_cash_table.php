@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('promo_cash', function (Blueprint $table) {
             $table->id();
-            $table->float('min_deposit_cash',)->nullable();
-            $table->float('min_topup_cash')->nullable();
-            $table->float('bonus_cash')->nullable();
+            $table->double('min_deposit_cash',)->nullable();
+            $table->double('min_topup_cash')->nullable();
+            $table->double('bonus_cash')->nullable();
             $table->timestamps();
         });
     }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('id_member')->constrained('member')->onUpdate('cascade');
             $table->foreignId('id_pegawai')->constrained('pegawai')->onUpdate('cascade');
             $table->dateTime('date_time');
+            $table->double('price');
             $table->date('expired_date');
             $table->timestamps();
         });

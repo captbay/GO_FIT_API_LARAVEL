@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('promo_class', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_class_detail')->constrained('class_detail')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('jumlah_sesi')->nullable();
             $table->integer('bonus_sesi')->nullable();
             $table->integer('durasi_aktif')->nullable();

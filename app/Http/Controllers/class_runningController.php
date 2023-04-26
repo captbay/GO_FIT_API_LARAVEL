@@ -54,8 +54,11 @@ class class_runningController extends Controller
         //mengeset kapasitas karena max emang 10 saja (nanti kalo ada ikut berarti --)
         $capacity = 10;
 
-        //status awal pasti ada (1)
-        $status = 1;
+        //status
+        $status = '';
+
+        //nama hari dari tanggal yang di pilih
+        $day_name = Carbon::parse($request->date)->format('l');
 
         //cek apakah jadwal dan instuktur tersebut sudah ada atau belum
         //jam harus dalam kontek H:i:s dibuatin string dulu
@@ -85,6 +88,7 @@ class class_runningController extends Controller
             'end_class' => $end_class,
             'capacity' => $capacity,
             'date' => $request->date,
+            'day_name' => $day_name,
             'status' => $status,
         ]);
 
@@ -100,6 +104,85 @@ class class_runningController extends Controller
                 'success' => false,
                 'message' => 'class_running Failed to Save',
                 'data'    => $class_running
+            ], 409);
+        }
+    }
+
+    /**
+     * generate a week schedule of class_running store data.
+     *
+     */
+    public function generateDateAWeek()
+    {
+        $class_running_list = class_running::all();
+
+        foreach ($class_running_list as $class_running_list) {
+            $date = $class_running_list->date;
+            $day_name = Carbon::parse($date)->format('l');
+            $class_running_list->update([
+                'date' => Carbon::parse($date)->addDays(7),
+                'day_name' => $day_name
+            ]);
+        }
+        $class_running_list = class_running::all();
+        if ($class_running_list) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'class_running scheduled generated successfully',
+                'data'    => $class_running_list,
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'class_running Failed to generate scheduled',
+                'data'    => $class_running_list,
+            ], 409);
+        }
+    }
+
+    /**
+     * update when class is not available.
+     *
+     */
+    public function updateClassNotAvailable(Request $request, $id)
+    {
+
+        $class_running = class_running::find($id);
+        if (!$class_running) {
+            //data class_running not found
+            return response()->json([
+                'success' => false,
+                'message' => 'class_running Not Found',
+            ], 404);
+        }
+
+        //validate form
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+        ]);
+
+        //response error validation
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $class_running->update([
+            'status' => $request->status,
+        ]);
+
+        if ($class_running) {
+
+            return response()->json([
+                'success' => true,
+                'message' => 'class_running scheduled update status successfully',
+                'data'    => $class_running,
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'class_running Failed to update status scheduled',
+                'data'    => $class_running,
             ], 409);
         }
     }
@@ -158,6 +241,9 @@ class class_runningController extends Controller
         //menambahkan 1 jam setelah start class karena emang sejam setelah start class pasti selesai
         $end_class = Carbon::parse($request->start_class)->addHour();
 
+        //nama hari dari tanggal yang dipilih
+        $day_name = Carbon::parse($request->date)->format('l');
+
         //cek apakah jadwal dan instuktur tersebut sudah ada atau belum
         //jam harus dalam kontek H:i:s dibuatin string dulu
         $start_class = Carbon::parse($request->start_class)->format('H:i:s');
@@ -187,6 +273,7 @@ class class_runningController extends Controller
             'end_class' => $end_class,
             'capacity' => $request->capacity,
             'date' => $request->date,
+            'day_name' => $day_name,
             'status' => $request->status,
         ]);
 

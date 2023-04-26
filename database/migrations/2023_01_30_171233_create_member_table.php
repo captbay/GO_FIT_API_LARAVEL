@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('number_phone');
             $table->date('born_date');
             $table->string('gender');
-            $table->float('jumlah_deposit_reguler')->nullable();
+            $table->double('jumlah_deposit_reguler')->nullable();
             $table->date('expired_date_membership')->nullable();
             $table->boolean('status_membership')->nullable();
             $table->timestamps();

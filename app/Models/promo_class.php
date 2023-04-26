@@ -18,16 +18,11 @@ class promo_class extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id_class_detail',
         'jumlah_sesi',
         'bonus_sesi',
         'durasi_aktif',
     ];
 
-    public function class_detail()
-    {
-        return $this->belongsTo(class_detail::class, 'id_class_detail');
-    }
 
     public function deposit_package_history()
     {

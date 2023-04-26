@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('no_class_history');
             $table->foreignId('id_class_booking')->constrained('class_booking')->onUpdate('cascade')->onDelete('cascade');
             $table->dateTime('date_time');
-            $table->float('sisa_deposit');
+            $table->double('sisa_deposit');
             $table->timestamps();
         });
     }

@@ -22,9 +22,9 @@ class class_detail extends Model
         'price',
     ];
 
-    public function promo_class()
+    public function deposit_package_history()
     {
-        return $this->hasMany(promo_class::class,  'id_class_detail', 'id');
+        return $this->hasMany(deposit_package_history::class,  'id_class_detail', 'id');
     }
 
     public function class_running()

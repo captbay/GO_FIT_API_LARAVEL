@@ -22,6 +22,7 @@ class aktivasi_history extends Model
         'id_member',
         'id_pegawai',
         'date_time',
+        'price',
         'expired_date',
     ];
 

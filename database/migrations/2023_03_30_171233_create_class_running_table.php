@@ -20,8 +20,9 @@ return new class extends Migration
             $table->time('start_class');
             $table->time('end_class');
             $table->integer('capacity')->nullable();
-            $table->date('date');
-            $table->boolean('status')->nullable();
+            $table->date('date')->nullable();
+            $table->string('day_name')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

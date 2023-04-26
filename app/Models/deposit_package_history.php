@@ -20,6 +20,7 @@ class deposit_package_history extends Model
     protected $fillable = [
         'no_deposit_package_history',
         'id_promo_class',
+        'id_class_detail',
         'id_member',
         'id_pegawai',
         'date_time',
@@ -27,6 +28,11 @@ class deposit_package_history extends Model
         'package_amount',
         'expired_date',
     ];
+
+    public function class_detail()
+    {
+        return $this->belongsTo(class_detail::class, 'id_class_detail');
+    }
 
     public function promo_class()
     {

@@ -84,6 +84,8 @@ class memberController extends Controller
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
+            'jumlah_deposit_reguler' => 0,
+            'status_membership' => 0,
         ]);
 
         if ($member) {
@@ -231,6 +233,13 @@ class memberController extends Controller
     public function generateMemberCard($id)
     {
         $member = member::find($id);
+        if (!$member) {
+            //data member not found
+            return response()->json([
+                'success' => false,
+                'message' => 'member Not Found',
+            ], 404);
+        }
 
         $data = [
             'title' => 'GoFit',

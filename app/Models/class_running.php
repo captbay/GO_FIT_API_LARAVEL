@@ -24,6 +24,7 @@ class class_running extends Model
         'end_class',
         'capacity',
         'date',
+        'day_name',
         'status',
     ];
 

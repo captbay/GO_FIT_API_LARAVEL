@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
@@ -35,13 +36,29 @@ class authController extends Controller
         if (Hash::check($request->password, $user->password)) {
             if ($user->role == 'member') {
                 $member = $user->member;
-                return response()->json([
-                    'message' => 'Authenticated as a member',
-                    'user' => $user,
-                    'member' => $member,
-                    'token_type' => 'Bearer',
-                    'access_token' => $token
-                ], 200);
+                $expiredDate = Carbon::parse($member->expired_date_membership)->format('Y-m-d');
+                $today = Carbon::now()->format('Y-m-d');
+
+                $compareDateExprd = $expiredDate < $today;
+
+                if ($compareDateExprd || $member->expired_date_membership == NULL) {
+                    $member->update([
+                        'status_membership' => 0,
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Login Failed Because Membership is expired or not active, Please Contact Cashier',
+                    ], 409);
+                } else {
+                    return response()->json([
+                        'message' => 'Authenticated as a member active',
+                        'user' => $user,
+                        'member' => $member,
+                        'token_type' => 'Bearer',
+                        'access_token' => $token
+                    ], 200);
+                }
             } else if ($user->role == 'instruktur') {
                 $instruktur = $user->instruktur;
                 return response()->json([

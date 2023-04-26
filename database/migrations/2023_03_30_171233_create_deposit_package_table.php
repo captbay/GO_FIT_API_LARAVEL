@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('id_class_detail')->constrained('class_detail')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_member')->constrained('member')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('package_amount');
-            $table->date('expired_date');
+            $table->date('expired_date')->nullable();
             $table->timestamps();
         });
     }
