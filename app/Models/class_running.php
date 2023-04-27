@@ -18,30 +18,28 @@ class class_running extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id_instruktur',
-        'id_class_detail',
-        'start_class',
-        'end_class',
+        // 'id_instruktur',
+        'nama_instruktur_pengganti',
+        'id_jadwal_umum',
+        // 'start_class',
+        // 'end_class',
         'capacity',
         'date',
         'day_name',
         'status',
     ];
 
-    public function instruktur()
-    {
-        return $this->belongsTo(instruktur::class, 'id_instruktur');
-    }
-
-    public function class_detail()
-    {
-        return $this->belongsTo(class_detail::class, 'id_class_detail');
-    }
 
     public function class_booking()
     {
         return $this->hasMany(class_booking::class, 'id_class_running', 'id');
     }
+
+    public function jadwal_umum()
+    {
+        return $this->belongsTo(jadwal_umum::class, 'id_jadwal_umum');
+    }
+
 
     public function getCreatedAtAttribute($value)
     {

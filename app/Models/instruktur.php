@@ -33,9 +33,9 @@ class instruktur extends Model
         return $this->belongsTo(User::class, 'id_users');
     }
 
-    public function class_running()
+    public function jadwal_umum()
     {
-        return $this->hasMany(class_running::class,  'id_instruktur', 'id');
+        return $this->hasMany(jadwal_umum::class,  'id_instruktur', 'id');
     }
 
     public function instruktur_presensi()

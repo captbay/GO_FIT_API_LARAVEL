@@ -7,6 +7,7 @@ use App\Http\Controllers\class_runningController;
 use App\Http\Controllers\deposit_package_historyController;
 use App\Http\Controllers\deposit_reguler_historyController;
 use App\Http\Controllers\instrukturController;
+use App\Http\Controllers\jadwal_umumController;
 use App\Http\Controllers\memberController;
 use App\Http\Controllers\pegawaiController;
 use App\Http\Controllers\promo_cashController;
@@ -63,7 +64,13 @@ Route::apiResource(
     class_detailController::class
 );
 
-//class_running
+//jadwal_umum
+Route::apiResource(
+    'jadwal_umum',
+    jadwal_umumController::class
+);
+
+//class_running RSD
 Route::apiResource(
     'class_running',
     class_runningController::class
@@ -107,6 +114,7 @@ Route::apiResource(
     'promo_class',
     promo_classController::class
 );
+
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
 });

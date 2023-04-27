@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
-class class_detail extends Model
+class jadwal_umum extends Model
 {
     use HasFactory;
 
-    protected $table = "class_detail";
+    protected $table = "jadwal_umum";
 
     /**
      * The attributes that are mass assignable.
@@ -18,23 +18,29 @@ class class_detail extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'price',
+        'id_instruktur',
+        'id_class_detail',
+        'start_class',
+        'end_class',
+        'capacity',
+        // 'date',
+        'day_name',
+        // 'status',
     ];
 
-    public function deposit_package_history()
+    public function instruktur()
     {
-        return $this->hasMany(deposit_package_history::class,  'id_class_detail', 'id');
+        return $this->belongsTo(instruktur::class, 'id_instruktur');
     }
 
-    public function jadwal_umum()
+    public function class_detail()
     {
-        return $this->hasMany(jadwal_umum::class,  'id_class_detail', 'id');
+        return $this->belongsTo(class_detail::class, 'id_class_detail');
     }
 
-    public function deposit_package()
+    public function class_running()
     {
-        return $this->hasMany(deposit_package::class,  'id_class_detail', 'id');
+        return $this->hasOne(class_running::class, 'id_jadwal_umum', 'id');
     }
 
     public function getCreatedAtAttribute($value)

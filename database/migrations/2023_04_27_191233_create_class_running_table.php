@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('class_running', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_instruktur')->constrained('instruktur')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('id_class_detail')->constrained('class_detail')->onUpdate('cascade')->onDelete('cascade');
-            $table->time('start_class');
-            $table->time('end_class');
-            $table->integer('capacity')->nullable();
-            $table->date('date')->nullable();
-            $table->string('day_name')->nullable();
-            $table->string('status')->nullable();
+            //masih bingung 
+            // $table->foreignId('id_instruktur')->constrained('instruktur')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_jadwal_umum')->constrained('jadwal_umum')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('capacity');
+            $table->date('date');
+            $table->string('day_name');
+            $table->string('status');
+            $table->string('nama_instruktur_pengganti')->nullable();
             $table->timestamps();
         });
     }
