@@ -74,18 +74,27 @@ class authController extends Controller
                 $pegawai = $user->pegawai;
                 if ($pegawai->role == 'kasir') {
                     return response()->json([
-                        'message' => 'Authenticated as a pegawai',
+                        'message' => 'Authenticated as a kasir',
                         'user' => $user,
                         'role' => 'kasir',
                         'pegawai' => $pegawai,
                         'token_type' => 'Bearer',
                         'access_token' => $token
                     ], 200);
-                } else {
+                } else if ($pegawai->role == 'mo') {
                     return response()->json([
-                        'message' => 'Authenticated as a pegawai',
+                        'message' => 'Authenticated as a mo',
                         'user' => $user,
                         'role' => 'mo',
+                        'pegawai' => $pegawai,
+                        'token_type' => 'Bearer',
+                        'access_token' => $token
+                    ], 200);
+                } else if ($pegawai->role == 'admin') {
+                    return response()->json([
+                        'message' => 'Authenticated as a admin',
+                        'user' => $user,
+                        'role' => 'admin',
                         'pegawai' => $pegawai,
                         'token_type' => 'Bearer',
                         'access_token' => $token
@@ -93,7 +102,7 @@ class authController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Authenticated as a admin',
+                    'message' => 'Authenticated as a super admin',
                     'user' => $user,
                     'role' => 'admin',
                     'token_type' => 'Bearer',
