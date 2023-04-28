@@ -28,95 +28,95 @@ use Illuminate\Support\Facades\Route;
 
 
 //auth
-Route::post('users/login', [authController::class, 'login']);
+Route::post('login', [authController::class, 'login']);
 Route::post('users/store/admin', [authController::class, 'registerAdmin']);
 
 
 //sementara taruh di luar nanti pindahin di dalem group biar bisa cek login
 
-//auth extention after login baru bisa akses
-Route::post('users/updatePassword', [authController::class, 'updatePassword']);
-Route::post('users/resetPassword', [authController::class, 'resetPassword']);
-Route::post('users/logout', [authController::class, 'logout']);
-
-//member
-Route::apiResource(
-    'member',
-    memberController::class
-);
-Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
-
-//instruktur
-Route::apiResource(
-    'instruktur',
-    instrukturController::class
-);
-
-//pegawai
-Route::apiResource(
-    'pegawai',
-    pegawaiController::class
-);
-
-//class_detail
-Route::apiResource(
-    'class_detail',
-    class_detailController::class
-);
-
-//jadwal_umum
-Route::apiResource(
-    'jadwal_umum',
-    jadwal_umumController::class
-);
-
-//class_running RSD
-Route::apiResource(
-    'class_running',
-    class_runningController::class
-);
-Route::post('class_running/generate', [class_runningController::class, 'generateDateAWeek']);
-Route::post('class_running/statusUpdate/{id}', [class_runningController::class, 'updateClassNotAvailable']);
-
-
-//aktivasi_history
-//put / update ga ada soalnya ini recipt
-Route::apiResource(
-    'aktivasi_history',
-    aktivasi_historyController::class
-);
-Route::get('aktivasi/generatePdf/{id}', [aktivasi_historyController::class, 'generate_aktivasi_historyCard']);
-
-//deposit_reguler_history
-//put / update ga ada soalnya ini recipt
-Route::apiResource(
-    'deposit_reguler_history',
-    deposit_reguler_historyController::class
-);
-Route::get('depositCash/generatePdf/{id}', [deposit_reguler_historyController::class, 'generate_deposit_reguler_historyCard']);
-
-//deposit_package_history
-//put / update ga ada soalnya ini recipt
-Route::apiResource(
-    'deposit_package_history',
-    deposit_package_historyController::class
-);
-Route::get('depositPackage/generatePdf/{id}', [deposit_package_historyController::class, 'generate_deposit_package_historyCard']);
-
-//promo_cash
-Route::apiResource(
-    'promo_cash',
-    promo_cashController::class
-);
-
-//promo_class
-Route::apiResource(
-    'promo_class',
-    promo_classController::class
-);
 
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::post('logout', [authController::class, 'logout']);
+    //auth extention after login baru bisa akses
+    Route::post('users/updatePassword', [authController::class, 'updatePassword']);
+    Route::post('users/resetPassword', [authController::class, 'resetPassword']);
+
+    //member
+    Route::apiResource(
+        'member',
+        memberController::class
+    );
+    Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
+
+    //instruktur
+    Route::apiResource(
+        'instruktur',
+        instrukturController::class
+    );
+
+    //pegawai
+    Route::apiResource(
+        'pegawai',
+        pegawaiController::class
+    );
+
+    //class_detail
+    Route::apiResource(
+        'class_detail',
+        class_detailController::class
+    );
+
+    //jadwal_umum
+    Route::apiResource(
+        'jadwal_umum',
+        jadwal_umumController::class
+    );
+
+    //class_running RSD
+    Route::apiResource(
+        'class_running',
+        class_runningController::class
+    );
+    Route::post('class_running/generate', [class_runningController::class, 'generateDateAWeek']);
+    Route::post('class_running/statusUpdate/{id}', [class_runningController::class, 'updateClassNotAvailable']);
+
+
+    //aktivasi_history
+    //put / update ga ada soalnya ini recipt
+    Route::apiResource(
+        'aktivasi_history',
+        aktivasi_historyController::class
+    );
+    Route::get('aktivasi/generatePdf/{id}', [aktivasi_historyController::class, 'generate_aktivasi_historyCard']);
+
+    //deposit_reguler_history
+    //put / update ga ada soalnya ini recipt
+    Route::apiResource(
+        'deposit_reguler_history',
+        deposit_reguler_historyController::class
+    );
+    Route::get('depositCash/generatePdf/{id}', [deposit_reguler_historyController::class, 'generate_deposit_reguler_historyCard']);
+
+    //deposit_package_history
+    //put / update ga ada soalnya ini recipt
+    Route::apiResource(
+        'deposit_package_history',
+        deposit_package_historyController::class
+    );
+    Route::get('depositPackage/generatePdf/{id}', [deposit_package_historyController::class, 'generate_deposit_package_historyCard']);
+
+    //promo_cash
+    Route::apiResource(
+        'promo_cash',
+        promo_cashController::class
+    );
+
+    //promo_class
+    Route::apiResource(
+        'promo_class',
+        promo_classController::class
+    );
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

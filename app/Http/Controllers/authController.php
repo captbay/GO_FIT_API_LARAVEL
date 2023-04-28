@@ -20,7 +20,7 @@ class authController extends Controller
             'password' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([$validator->errors(), 'message' => 'Login Failed',], 422);
         }
 
         $user = User::where('username', $request->username)->first();
@@ -55,6 +55,7 @@ class authController extends Controller
                         'message' => 'Authenticated as a member active',
                         'user' => $user,
                         'member' => $member,
+                        'role' => 'member',
                         'token_type' => 'Bearer',
                         'access_token' => $token
                     ], 200);
@@ -64,23 +65,37 @@ class authController extends Controller
                 return response()->json([
                     'message' => 'Authenticated as a instruktur',
                     'user' => $user,
+                    'role' => 'instruktur',
                     'instruktur' => $instruktur,
                     'token_type' => 'Bearer',
                     'access_token' => $token
                 ], 200);
             } else if ($user->role == 'pegawai') {
                 $pegawai = $user->pegawai;
-                return response()->json([
-                    'message' => 'Authenticated as a pegawai',
-                    'user' => $user,
-                    'pegawai' => $pegawai,
-                    'token_type' => 'Bearer',
-                    'access_token' => $token
-                ], 200);
+                if ($pegawai->role == 'kasir') {
+                    return response()->json([
+                        'message' => 'Authenticated as a pegawai',
+                        'user' => $user,
+                        'role' => 'kasir',
+                        'pegawai' => $pegawai,
+                        'token_type' => 'Bearer',
+                        'access_token' => $token
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'Authenticated as a pegawai',
+                        'user' => $user,
+                        'role' => 'mo',
+                        'pegawai' => $pegawai,
+                        'token_type' => 'Bearer',
+                        'access_token' => $token
+                    ], 200);
+                }
             } else {
                 return response()->json([
                     'message' => 'Authenticated as a admin',
                     'user' => $user,
+                    'role' => 'admin',
                     'token_type' => 'Bearer',
                     'access_token' => $token
                 ], 200);
