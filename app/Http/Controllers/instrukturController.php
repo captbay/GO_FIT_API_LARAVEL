@@ -135,8 +135,8 @@ class instrukturController extends Controller
             'name' => 'required',
             'address' => 'required',
             'number_phone' => 'required',
-            'born_date' => 'required',
-            'gender' => 'required',
+            // 'born_date' => 'required',
+            // 'gender' => 'required',
         ]);
 
         //response error validation
@@ -149,8 +149,8 @@ class instrukturController extends Controller
             'name' => $request->name,
             'address' => $request->address,
             'number_phone' => $request->number_phone,
-            'born_date' => $request->born_date,
-            'gender' => $request->gender,
+            // 'born_date' => $request->born_date,
+            // 'gender' => $request->gender,
         ]);
 
         return response()->json([

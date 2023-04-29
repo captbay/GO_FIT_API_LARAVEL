@@ -203,7 +203,57 @@ class authController extends Controller
         ], 200);
     }
 
+    public function show(Request $request, $id)
+    {
+        $uid = $request->user()->id;
+        $user = User::find($id);
+        if ($user != null && $uid == $id) {
+            if ($user->role == 'member') {
+                //make response JSON
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Detail Data member',
+                    'dataUser'    => $user,
+                    'dataDiri'    => $user->member
+                ], 200);
+            } else if ($user->role == 'instruktur') {
+                //make response JSON
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Detail Data instruktur',
+                    'dataUser'    => $user,
+                    'dataDiri'    => $user->instruktur
+                ], 200);
+            } else if ($user->role == 'pegawai') {
+                //make response JSON
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Detail Data pegawai',
+                    'dataUser'    => $user,
+                    'dataDiri'    => $user->pegawai
+                ], 200);
+            } else {
+                //make response JSON
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Detail Data Super Admin',
+                    'superrole'    => 'superadmin',
+                    'dataDiri'    => $user,
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'member Not Found',
+            ], 404);
+        }
+    }
 
+
+    public function getCurrentLoggedInUser(Request $request)
+    {
+        return $this->show($request, $request->user()->id);
+    }
 
     /**
      * store

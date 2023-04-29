@@ -37,6 +37,9 @@ Route::post('users/store/admin', [authController::class, 'registerAdmin']);
 
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
+    //users
+    Route::get('users', [authController::class, 'getCurrentLoggedInUser']);
+    Route::get('users/{id}', [authController::class, 'show']);
     Route::post('logout', [authController::class, 'logout']);
     //auth extention after login baru bisa akses
     Route::post('users/updatePassword', [authController::class, 'updatePassword']);
