@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 
 class class_bookingController extends Controller
 {
-/**
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +15,7 @@ class class_bookingController extends Controller
      */
     public function index()
     {
-        $class_booking = class_booking::latest()->get();
+        $class_booking = class_booking::first()->get();
 
         return response()->json([
             'success' => true,

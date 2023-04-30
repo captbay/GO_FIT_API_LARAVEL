@@ -15,7 +15,7 @@ class class_historyController extends Controller
      */
     public function index()
     {
-        $class_history = class_history::latest()->get();
+        $class_history = class_history::first()->get();
 
         return response()->json([
             'success' => true,

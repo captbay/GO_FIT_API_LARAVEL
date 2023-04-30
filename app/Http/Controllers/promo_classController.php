@@ -15,7 +15,7 @@ class promo_classController extends Controller
      */
     public function index()
     {
-        $promo_class = promo_class::latest()->get();
+        $promo_class = promo_class::first()->get();
 
         return response()->json([
             'success' => true,

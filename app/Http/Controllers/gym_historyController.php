@@ -15,7 +15,7 @@ class gym_historyController extends Controller
      */
     public function index()
     {
-        $gym_history = gym_history::latest()->get();
+        $gym_history = gym_history::first()->get();
 
         return response()->json([
             'success' => true,

@@ -15,7 +15,7 @@ class promo_cashController extends Controller
      */
     public function index()
     {
-        $promo_cash = promo_cash::latest()->get();
+        $promo_cash = promo_cash::first()->get();
 
         return response()->json([
             'success' => true,

@@ -15,7 +15,7 @@ class instruktur_presensi_presensiController extends Controller
      */
     public function index()
     {
-        $instruktur_presensi = instruktur_presensi::latest()->get();
+        $instruktur_presensi = instruktur_presensi::first()->get();
 
         return response()->json([
             'success' => true,

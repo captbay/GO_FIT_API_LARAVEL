@@ -20,7 +20,7 @@ class deposit_reguler_historyController extends Controller
      */
     public function index()
     {
-        $deposit_reguler_history = deposit_reguler_history::latest()->get();
+        $deposit_reguler_history = deposit_reguler_history::first()->get();
 
         return response()->json([
             'success' => true,

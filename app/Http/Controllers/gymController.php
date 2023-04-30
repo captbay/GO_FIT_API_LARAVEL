@@ -16,7 +16,7 @@ class gymController extends Controller
      */
     public function index()
     {
-        $gym = gym::latest()->get();
+        $gym = gym::first()->get();
 
         return response()->json([
             'success' => true,

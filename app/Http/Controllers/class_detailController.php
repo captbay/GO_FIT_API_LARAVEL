@@ -15,7 +15,7 @@ class class_detailController extends Controller
      */
     public function index()
     {
-        $class_detail = class_detail::latest()->get();
+        $class_detail = class_detail::first()->get();
 
         return response()->json([
             'success' => true,

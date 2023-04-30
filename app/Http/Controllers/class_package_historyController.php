@@ -15,7 +15,7 @@ class class_package_historyController extends Controller
      */
     public function index()
     {
-        $class_package_history = class_package_history::latest()->get();
+        $class_package_history = class_package_history::first()->get();
 
         return response()->json([
             'success' => true,

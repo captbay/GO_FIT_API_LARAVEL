@@ -16,7 +16,7 @@ class jadwal_umumController extends Controller
      */
     public function index()
     {
-        $jadwal_umum = jadwal_umum::latest()->get();
+        $jadwal_umum = jadwal_umum::first()->get();
 
         return response()->json([
             'success' => true,

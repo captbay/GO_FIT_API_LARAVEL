@@ -19,7 +19,7 @@ class class_runningController extends Controller
      */
     public function index()
     {
-        $class_running = class_running::latest()->get();
+        $class_running = class_running::first()->get();
 
         return response()->json([
             'success' => true,
