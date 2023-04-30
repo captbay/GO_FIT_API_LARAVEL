@@ -18,7 +18,7 @@ class pegawaiController extends Controller
      */
     public function index()
     {
-        $pegawai = pegawai::latest()->get();
+        $pegawai = pegawai::first()->get();
 
         return response()->json([
             'success' => true,
@@ -51,7 +51,13 @@ class pegawaiController extends Controller
         }
 
         //membuatIddengan format(Xy) X= huruf dan Y = angka
-        $count = DB::table('pegawai')->count() + 1;
+        // $count = DB::table('pegawai')->count() + 1;
+        if (DB::table('pegawai')->count() == 0) {
+            $id_terakhir = 0;
+        } else {
+            $id_terakhir = pegawai::latest('id')->first()->id;
+        }
+        $count = $id_terakhir + 1;
         $id_generate = sprintf("%02d", $count);
 
         //membuat password dengan format dmy
@@ -169,10 +175,12 @@ class pegawaiController extends Controller
     public function destroy($id)
     {
         $pegawai = pegawai::find($id);
+        $user = User::find($pegawai->id_users);
 
         if ($pegawai) {
             //delete pegawai
             $pegawai->delete();
+            $user->delete();
 
             return response()->json([
                 'success' => true,

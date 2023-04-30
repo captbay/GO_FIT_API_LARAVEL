@@ -33,7 +33,7 @@ Route::post('users/store/admin', [authController::class, 'registerAdmin']);
 
 
 //sementara taruh di luar nanti pindahin di dalem group biar bisa cek login
-
+Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
 
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'member',
         memberController::class
     );
-    Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
+
 
     //instruktur
     Route::apiResource(

@@ -34,7 +34,7 @@ class promo_classController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            'id_class_detail' => 'required',
+            // 'id_class_detail' => 'required',
             'jumlah_sesi' => 'required',
             'bonus_sesi' => 'required',
             'durasi_aktif' => 'required',
@@ -46,7 +46,7 @@ class promo_classController extends Controller
         }
 
         $promo_class = promo_class::create([
-            'id_class_detail' => $request->id_class_detail,
+            // 'id_class_detail' => $request->id_class_detail,
             'jumlah_sesi' => $request->jumlah_sesi,
             'bonus_sesi' => $request->bonus_sesi,
             'durasi_aktif' => $request->durasi_aktif,
@@ -106,7 +106,7 @@ class promo_classController extends Controller
         }
         //validate form
         $validator = Validator::make($request->all(), [
-            'id_class_detail' => 'required',
+            // 'id_class_detail' => 'required',
             'jumlah_sesi' => 'required',
             'bonus_sesi' => 'required',
             'durasi_aktif' => 'required',
@@ -119,7 +119,7 @@ class promo_classController extends Controller
 
         //update promo_class with new image
         $promo_class->update([
-            'id_class_detail' => $request->id_class_detail,
+            // 'id_class_detail' => $request->id_class_detail,
             'jumlah_sesi' => $request->jumlah_sesi,
             'bonus_sesi' => $request->bonus_sesi,
             'durasi_aktif' => $request->durasi_aktif,

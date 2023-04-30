@@ -18,7 +18,7 @@ class instrukturController extends Controller
      */
     public function index()
     {
-        $instruktur = instruktur::latest()->get();
+        $instruktur = instruktur::first()->get();
 
         return response()->json([
             'success' => true,
@@ -50,7 +50,12 @@ class instrukturController extends Controller
         }
 
         //membuatIddengan format(Xy) X= huruf dan Y = angka
-        $count = DB::table('instruktur')->count() + 1;
+        if (DB::table('instruktur')->count() == 0) {
+            $id_terakhir = 0;
+        } else {
+            $id_terakhir = instruktur::latest('id')->first()->id;
+        }
+        $count = $id_terakhir + 1;
         $id_generate = sprintf("%02d", $count);
 
         //membuat password dengan format dmy
@@ -73,7 +78,7 @@ class instrukturController extends Controller
             'number_phone' => $request->number_phone,
             'born_date' => $request->born_date,
             'gender' => $request->gender,
-            // 'total_late' => $request->total_late, (buatin fungsi yang ngitung dari tabel presensi instruktur)
+            'total_late' => 0,
         ]);
 
         if ($instruktur) {
@@ -169,10 +174,13 @@ class instrukturController extends Controller
     public function destroy($id)
     {
         $instruktur = instruktur::find($id);
+        $user = User::find($instruktur->id_users);
+
 
         if ($instruktur) {
             //delete instruktur
             $instruktur->delete();
+            $user->delete();
 
             return response()->json([
                 'success' => true,

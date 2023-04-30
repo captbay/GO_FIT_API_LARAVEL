@@ -20,7 +20,7 @@ class memberController extends Controller
      */
     public function index()
     {
-        $member = member::latest()->get();
+        $member = member::first()->get();
 
         return response()->json([
             'success' => true,
@@ -52,7 +52,12 @@ class memberController extends Controller
         }
 
         //membuatIddengan format(Xy) X= huruf dan Y = angka
-        $count = DB::table('member')->count() + 1;
+        if (DB::table('member')->count() == 0) {
+            $id_terakhir = 0;
+        } else {
+            $id_terakhir = member::latest('id')->first()->id;
+        }
+        $count = $id_terakhir + 1;
         $id_generate = sprintf("%03d", $count);
 
         //membuat angka dengan format y
@@ -205,10 +210,12 @@ class memberController extends Controller
     public function destroy($id)
     {
         $member = member::find($id);
+        $user = User::find($member->id_users);
 
         if ($member) {
             //delete member
             $member->delete();
+            $user->delete();
 
             return response()->json([
                 'success' => true,
@@ -250,6 +257,22 @@ class memberController extends Controller
 
         $pdf = Pdf::loadview('memberCard', $data);
 
-        return $pdf->download('Member_Card_' . $member->name . '.pdf');
+        return $pdf->output();
+
+        // return $pdf->stream();
+
+        // if (count($data) > 0) {
+        //     return response([
+        //         'message' => 'Retrieve All Success',
+        //         'data' => $data
+        //     ], 200);
+        // } //Return data semua Transaksi dalam bentuk JSON
+
+        // return response([
+        //     'message' => 'Empty',
+        //     'data' => null
+        // ], 404); //Return message data Transaksi kosong
+
+        // return $pdf->download('Member_Card_' . $member->name . '.pdf');
     }
 }
