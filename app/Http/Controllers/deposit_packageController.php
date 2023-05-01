@@ -15,7 +15,7 @@ class deposit_packageController extends Controller
      */
     public function index()
     {
-        $deposit_package = deposit_package::first()->get();
+        $deposit_package = deposit_package::with(['class_detail', 'member'])->get();
 
         return response()->json([
             'success' => true,

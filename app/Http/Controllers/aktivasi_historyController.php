@@ -20,7 +20,7 @@ class aktivasi_historyController extends Controller
      */
     public function index()
     {
-        $aktivasi_history = aktivasi_history::first()->get();
+        $aktivasi_history = aktivasi_history::with(['member', 'pegawai'])->get();
 
         return response()->json([
             'success' => true,

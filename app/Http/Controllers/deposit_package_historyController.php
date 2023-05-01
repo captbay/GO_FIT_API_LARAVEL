@@ -22,7 +22,7 @@ class deposit_package_historyController extends Controller
      */
     public function index()
     {
-        $deposit_package_history = deposit_package_history::first()->get();
+        $deposit_package_history = deposit_package_history::with(['class_detail', 'promo_class', 'member', 'pegawai'])->get();
 
         return response()->json([
             'success' => true,

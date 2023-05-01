@@ -15,7 +15,7 @@ class class_bookingController extends Controller
      */
     public function index()
     {
-        $class_booking = class_booking::first()->get();
+        $class_booking = class_booking::with(['class_running', 'member'])->get();
 
         return response()->json([
             'success' => true,

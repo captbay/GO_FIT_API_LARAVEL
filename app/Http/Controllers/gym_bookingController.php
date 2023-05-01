@@ -15,7 +15,7 @@ class gym_bookingController extends Controller
      */
     public function index()
     {
-        $gym_booking = gym_booking::first()->get();
+        $gym_booking = gym_booking::with(['gym', 'member'])->get();
 
         return response()->json([
             'success' => true,

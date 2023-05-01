@@ -20,7 +20,7 @@ class memberController extends Controller
      */
     public function index()
     {
-        $member = member::first()->get();
+        $member = member::with(['users'])->get();
 
         return response()->json([
             'success' => true,

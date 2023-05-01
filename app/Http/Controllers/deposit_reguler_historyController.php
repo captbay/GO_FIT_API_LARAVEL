@@ -20,7 +20,7 @@ class deposit_reguler_historyController extends Controller
      */
     public function index()
     {
-        $deposit_reguler_history = deposit_reguler_history::first()->get();
+        $deposit_reguler_history = deposit_reguler_history::with(['promo_cash', 'member', 'pegawai'])->get();
 
         return response()->json([
             'success' => true,

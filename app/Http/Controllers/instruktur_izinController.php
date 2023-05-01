@@ -15,7 +15,7 @@ class instruktur_izin_izinController extends Controller
      */
     public function index()
     {
-        $instruktur_izin = instruktur_izin::first()->get();
+        $instruktur_izin = instruktur_izin::with(['instruktur', 'instruktur_pengganti'])->get();
 
         return response()->json([
             'success' => true,

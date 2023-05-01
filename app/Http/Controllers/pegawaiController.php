@@ -18,7 +18,7 @@ class pegawaiController extends Controller
      */
     public function index()
     {
-        $pegawai = pegawai::first()->get();
+        $pegawai = pegawai::with(['users'])->get();
 
         return response()->json([
             'success' => true,

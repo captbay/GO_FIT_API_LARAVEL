@@ -18,7 +18,7 @@ class instrukturController extends Controller
      */
     public function index()
     {
-        $instruktur = instruktur::first()->get();
+        $instruktur = instruktur::with(['users'])->get();
 
         return response()->json([
             'success' => true,
