@@ -45,7 +45,7 @@ class aktivasi_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $member = member::find($request->id_member);
@@ -159,7 +159,7 @@ class aktivasi_historyController extends Controller
 
     //     //response error validation
     //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 400);
+    //         return response()->json($validator->errors(), 422);
     //     }
 
     //     //update aktivasi_history with new image

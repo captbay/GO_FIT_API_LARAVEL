@@ -34,14 +34,14 @@ class promo_cashController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            'min_deposit_cash' => 'required',
-            'min_topup_cash' => 'required',
-            'bonus_cash' => 'required',
+            'min_deposit_cash' => 'required|integer',
+            'min_topup_cash' => 'required|integer',
+            'bonus_cash' => 'required|integer',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $promo_cash = promo_cash::create([
@@ -104,14 +104,14 @@ class promo_cashController extends Controller
         }
         //validate form
         $validator = Validator::make($request->all(), [
-            'min_deposit_cash' => 'required',
-            'min_topup_cash' => 'required',
-            'bonus_cash' => 'required',
+            'min_deposit_cash' => 'required|integer',
+            'min_topup_cash' => 'required|integer',
+            'bonus_cash' => 'required|integer',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update promo_cash with new image

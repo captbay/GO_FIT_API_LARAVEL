@@ -20,7 +20,7 @@ class authController extends Controller
             'password' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json([$validator->errors(), 'message' => 'Login Failed',], 422);
+            return response()->json([$validator->errors(), 'message' => 'Your Input must have a value',], 422);
         }
 
         $user = User::where('username', $request->username)->first();
@@ -112,7 +112,7 @@ class authController extends Controller
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Login Failed',
+                'message' => 'Password false or user Not Found',
             ], 409);
         }
     }

@@ -42,7 +42,7 @@ class class_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $class_history = class_history::create([
@@ -114,7 +114,7 @@ class class_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update class_history with new image

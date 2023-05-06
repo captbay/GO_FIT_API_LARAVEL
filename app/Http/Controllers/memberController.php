@@ -41,14 +41,16 @@ class memberController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:member',
             'address' => 'required',
-            'number_phone' => 'required',
-            'born_date' => 'required',
+            'number_phone' => 'required|regex:/^(0)8[1-9][0-9]{6,9}$/',
+            'born_date' => 'required|date|before:today',
             'gender' => 'required',
+        ], [
+            'number_phone.regex' => 'The number phone format is invalid (please use NUMBER and start with 08)',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //membuatIddengan format(Xy) X= huruf dan Y = angka
@@ -175,14 +177,16 @@ class memberController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'address' => 'required',
-            'number_phone' => 'required',
+            'number_phone' => 'required|regex:/^(0)8[1-9][0-9]{6,9}$/',
             // 'born_date' => 'required',
             // 'gender' => 'required',
+        ], [
+            'number_phone.regex' => 'The number phone format is invalid (please use NUMBER and start with 08)',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update member with new image

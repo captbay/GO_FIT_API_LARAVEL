@@ -38,12 +38,12 @@ class instruktur_izin_izinController extends Controller
             'id_instruktur_pengganti' => 'required',
             'id_class_running' => 'required',
             'alasan' => 'required',
-            'is_confirm' => 'required',
+            'is_confirm' => 'required|boolean',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $instruktur_izin = instruktur_izin::create([
@@ -112,12 +112,12 @@ class instruktur_izin_izinController extends Controller
             'id_instruktur_pengganti' => 'required',
             'id_class_running' => 'required',
             'alasan' => 'required',
-            'is_confirm' => 'required',
+            'is_confirm' => 'required|boolean',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update instruktur_izin with new image

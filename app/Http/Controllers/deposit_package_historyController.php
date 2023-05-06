@@ -45,12 +45,12 @@ class deposit_package_historyController extends Controller
             'id_class_detail' => 'required', //show class and price
             'id_member' => 'required', //put id memmber
             'id_pegawai' => 'required', // put id pegawai
-            'package_amount' => 'required', // put berapa class dibeli
+            'package_amount' => 'required|integer', // put berapa class dibeli
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //class_detail find
@@ -195,7 +195,7 @@ class deposit_package_historyController extends Controller
 
     //     //response error validation
     //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 400);
+    //         return response()->json($validator->errors(), 422);
     //     }
 
     //     //update deposit_package_history with new image

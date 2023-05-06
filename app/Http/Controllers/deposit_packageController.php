@@ -36,13 +36,13 @@ class deposit_packageController extends Controller
         $validator = Validator::make($request->all(), [
             'id_class_detail' => 'required',
             'id_member' => 'required',
-            'package_amount' => 'required',
-            'expired_date' => 'required',
+            'package_amount' => 'required|integer',
+            'expired_date' => 'required|date',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $deposit_package = deposit_package::create([
@@ -108,13 +108,13 @@ class deposit_packageController extends Controller
         $validator = Validator::make($request->all(), [
             'id_class_detail' => 'required',
             'id_member' => 'required',
-            'package_amount' => 'required',
-            'expired_date' => 'required',
+            'package_amount' => 'required|integer',
+            'expired_date' => 'required|date',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update deposit_package with new image

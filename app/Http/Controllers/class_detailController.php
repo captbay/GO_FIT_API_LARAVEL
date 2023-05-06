@@ -35,12 +35,12 @@ class class_detailController extends Controller
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'price' => 'required',
+            'price' => 'required|integer',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $class_detail = class_detail::create([
@@ -103,12 +103,12 @@ class class_detailController extends Controller
         //validate form
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'price' => 'required',
+            'price' => 'required|integer',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update class_detail with new image

@@ -35,15 +35,15 @@ class instruktur_presensi_presensiController extends Controller
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
             'id_instruktur' => 'required',
-            'status_class' => 'required',
-            'start_class' => 'required',
-            'end_class' => 'required',
-            'date' => 'required',
+            'status_class' => 'required|boolean',
+            'start_class' => 'required|date_format:H:i',
+            'end_class' => 'required|date_format:H:i|after:start_class',
+            'date' => 'required|date',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $instruktur_presensi = instruktur_presensi::create([
@@ -109,15 +109,15 @@ class instruktur_presensi_presensiController extends Controller
         //validate form
         $validator = Validator::make($request->all(), [
             'id_instruktur' => 'required',
-            'status_class' => 'required',
-            'start_class' => 'required',
-            'end_class' => 'required',
-            'date' => 'required',
+            'status_class' => 'required|boolean',
+            'start_class' => 'required|date_format:H:i',
+            'end_class' => 'required|date_format:H:i|after:start_class',
+            'date' => 'required|date',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update instruktur_presensi with new image

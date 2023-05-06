@@ -41,7 +41,7 @@ class gym_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $gym_history = gym_history::create([
@@ -111,7 +111,7 @@ class gym_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update gym_history with new image

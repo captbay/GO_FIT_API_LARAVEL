@@ -46,7 +46,7 @@ class class_runningController extends Controller
 
     //     //response error validation
     //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 400);
+    //         return response()->json($validator->errors(), 422);
     //     }
     //     //menambahkan 1 jam setelah start class karena emang sejam setelah start class pasti selesai
     //     $end_class = Carbon::parse($request->start_class)->addHour();
@@ -223,7 +223,7 @@ class class_runningController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $class_running->update([
@@ -294,7 +294,7 @@ class class_runningController extends Controller
 
     //     //response error validation
     //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 400);
+    //         return response()->json($validator->errors(), 422);
     //     }
 
     //     //menambahkan 1 jam setelah start class karena emang sejam setelah start class pasti selesai

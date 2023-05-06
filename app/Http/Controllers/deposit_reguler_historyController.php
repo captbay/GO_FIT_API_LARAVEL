@@ -44,7 +44,7 @@ class deposit_reguler_historyController extends Controller
             'id_member' => 'required',
             'id_pegawai' => 'required',
             // 'date_time' => 'required',
-            'topup_amount' => 'required',
+            'topup_amount' => 'required|integer',
             // 'bonus' => 'required',
             // 'sisa' => 'required',
             // 'total' => 'required'
@@ -52,7 +52,7 @@ class deposit_reguler_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $member = member::find($request->id_member);
@@ -178,7 +178,7 @@ class deposit_reguler_historyController extends Controller
 
     //     //response error validation
     //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 400);
+    //         return response()->json($validator->errors(), 422);
     //     }
 
     //     //update deposit_reguler_history with new image

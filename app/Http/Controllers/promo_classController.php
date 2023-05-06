@@ -35,14 +35,14 @@ class promo_classController extends Controller
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
             // 'id_class_detail' => 'required',
-            'jumlah_sesi' => 'required',
-            'bonus_sesi' => 'required',
-            'durasi_aktif' => 'required',
+            'jumlah_sesi' => 'required|integer',
+            'bonus_sesi' => 'required|integer',
+            'durasi_aktif' => 'required|date',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $promo_class = promo_class::create([
@@ -107,14 +107,14 @@ class promo_classController extends Controller
         //validate form
         $validator = Validator::make($request->all(), [
             // 'id_class_detail' => 'required',
-            'jumlah_sesi' => 'required',
-            'bonus_sesi' => 'required',
-            'durasi_aktif' => 'required',
+            'jumlah_sesi' => 'required|integer',
+            'bonus_sesi' => 'required|integer',
+            'durasi_aktif' => 'required|date',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update promo_class with new image

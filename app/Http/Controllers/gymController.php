@@ -35,15 +35,15 @@ class gymController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            'capacity' => 'required',
-            'date' => 'required',
-            'start_gym' => 'required',
-            'end_gym' => 'required'
+            'capacity' => 'required|integer',
+            'date' => 'required|date',
+            'start_gym' => 'required|date_format:H:i',
+            'end_gym' => 'required|date_format:H:i|after:start_gym'
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $gym = gym::create([
@@ -107,15 +107,15 @@ class gymController extends Controller
         }
         //validate form
         $validator = Validator::make($request->all(), [
-            'capacity' => 'required',
-            'date' => 'required',
-            'start_gym' => 'required',
-            'end_gym' => 'required'
+            'capacity' => 'required|integer',
+            'date' => 'required|date',
+            'start_gym' => 'required|date_format:H:i',
+            'end_gym' => 'required|date_format:H:i|after:start_gym'
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update gym with new image

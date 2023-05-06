@@ -41,7 +41,7 @@ class gym_bookingController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $gym_booking = gym_booking::create([
@@ -111,7 +111,7 @@ class gym_bookingController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update gym_booking with new image

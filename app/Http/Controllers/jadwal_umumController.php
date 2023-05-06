@@ -37,13 +37,13 @@ class jadwal_umumController extends Controller
         $validator = Validator::make($request->all(), [
             'id_instruktur' => 'required',
             'id_class_detail' => 'required',
-            'start_class' => 'required',
+            'start_class' => 'required|date_format:H:i',
             'day_name' => 'required',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //jam harus dalam kontek H:i:s dibuatin string dulu
@@ -139,14 +139,14 @@ class jadwal_umumController extends Controller
         $validator = Validator::make($request->all(), [
             'id_instruktur' => 'required',
             'id_class_detail' => 'required',
-            'start_class' => 'required',
-            'capacity' => 'required',
+            'start_class' => 'required|date_format:H:i',
+            'capacity' => 'required|integer',
             'day_name' => 'required',
         ]);
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //jam harus dalam kontek H:i:s dibuatin string dulu

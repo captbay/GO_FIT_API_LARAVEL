@@ -41,7 +41,7 @@ class class_bookingController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $class_booking = class_booking::create([
@@ -111,7 +111,7 @@ class class_bookingController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update class_booking with new image

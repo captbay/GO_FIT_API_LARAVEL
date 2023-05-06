@@ -43,7 +43,7 @@ class class_package_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         $class_package_history = class_package_history::create([
@@ -117,7 +117,7 @@ class class_package_historyController extends Controller
 
         //response error validation
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 422);
         }
 
         //update class_package_history with new image
