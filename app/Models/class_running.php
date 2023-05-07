@@ -19,7 +19,7 @@ class class_running extends Model
      */
     protected $fillable = [
         // 'id_instruktur',
-        'nama_instruktur_pengganti',
+        // 'nama_instruktur_pengganti',
         'id_jadwal_umum',
         // 'start_class',
         // 'end_class',
@@ -40,6 +40,10 @@ class class_running extends Model
         return $this->belongsTo(jadwal_umum::class, 'id_jadwal_umum');
     }
 
+    public function instruktur_izin()
+    {
+        return $this->hasOne(instruktur_izin::class,  'id_class_running', 'id');
+    }
 
     public function getCreatedAtAttribute($value)
     {

@@ -6,6 +6,7 @@ use App\Models\class_detail;
 use App\Models\deposit_package;
 use App\Models\deposit_package_history;
 use App\Models\member;
+use App\Models\pegawai;
 use App\Models\promo_class;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -86,14 +87,14 @@ class deposit_package_historyController extends Controller
         // get date time now
         $date_time = Carbon::now();
 
-        //setdefault when no promo
+        //setdefault when no promo  
         $id_promo_class = null;
         $jumlah_sesi = $request->package_amount;
         $package_amount = $request->package_amount;
         $bonus_sesi = 0;
         $expired_date = null;
         //check what promo gofit have
-        $promo_class = promo_class::all();
+        $promo_class = promo_class::latest()->get();
         foreach ($promo_class as $promo_class) {
             if ($jumlah_sesi == $promo_class['jumlah_sesi']) {
                 $id_promo_class = $promo_class['id'];
@@ -264,7 +265,7 @@ class deposit_package_historyController extends Controller
 
         $class_detail = class_detail::find($deposit_package_history->id_class_detail);
         $member = member::find($deposit_package_history->id_member);
-        $pegawai = member::find($deposit_package_history->id_pegawai);
+        $pegawai = pegawai::find($deposit_package_history->id_pegawai);
         $promo_class = promo_class::find($deposit_package_history->id_promo_class);
 
         $data = [
@@ -277,6 +278,6 @@ class deposit_package_historyController extends Controller
 
         $pdf = Pdf::loadview('deposit_package_historyCard', $data);
 
-        return $pdf->download('deposit_package_history_Card_' . $member->name . '.pdf');
+        return $pdf->output();
     }
 }

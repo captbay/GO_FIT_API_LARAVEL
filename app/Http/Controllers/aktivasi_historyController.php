@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\aktivasi_history;
 use App\Models\member;
+use App\Models\pegawai;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -77,8 +78,14 @@ class aktivasi_historyController extends Controller
         // get date time now
         $date_time = Carbon::now();
 
-        // set expired date 1 year after date time now
-        $expired_date = Carbon::parse($date_time)->addYear();
+        //check if already aktivasi and update 
+        $countYear = aktivasi_history::where('id_member', $request->id_member)->count();
+        if ($countYear <= 0) {
+            // set expired date 1 year after date time now
+            $expired_date = Carbon::parse($date_time)->addYear();
+        } else {
+            $expired_date = Carbon::parse($date_time)->addYears($countYear + 1);
+        }
 
         $aktivasi_history = aktivasi_history::create([
             'no_aktivasi_history' => $no_aktivasi_history,
@@ -101,7 +108,7 @@ class aktivasi_historyController extends Controller
                 'success' => true,
                 'message' => 'aktivasi_history ditambah',
                 'data'    => $aktivasi_history,
-                'data member'    => $member
+                'data member'    => $member,
             ], 201);
         } else {
             return response()->json([
@@ -223,7 +230,7 @@ class aktivasi_historyController extends Controller
         }
 
         $member = member::find($aktivasi_history->id_member);
-        $pegawai = member::find($aktivasi_history->id_pegawai);
+        $pegawai = pegawai::find($aktivasi_history->id_pegawai);
 
         $data = [
             'aktivasi_history' => $aktivasi_history,
@@ -233,6 +240,6 @@ class aktivasi_historyController extends Controller
 
         $pdf = Pdf::loadview('aktivasi_historyCard', $data);
 
-        return $pdf->download('aktivasi_history_Card_' . $member->name . '.pdf');
+        return $pdf->output();
     }
 }

@@ -33,7 +33,7 @@ Route::post('users/store/admin', [authController::class, 'registerAdmin']);
 
 
 //sementara taruh di luar nanti pindahin di dalem group biar bisa cek login
-Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
+
 
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'member',
         memberController::class
     );
+    Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
 
 
     //instruktur
@@ -63,6 +64,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'pegawai',
         pegawaiController::class
     );
+    Route::get('getPegawaiKasir', [pegawaiController::class, 'showOnlyKasir']);
 
     //class_detail
     Route::apiResource(
@@ -91,7 +93,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'aktivasi_history',
         aktivasi_historyController::class
     );
-    Route::get('aktivasi/generatePdf/{id}', [aktivasi_historyController::class, 'generate_aktivasi_historyCard']);
+    Route::get('aktivasi_history/generatePdf/{id}', [aktivasi_historyController::class, 'generate_aktivasi_historyCard']);
 
     //deposit_reguler_history
     //put / update ga ada soalnya ini recipt
@@ -99,7 +101,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'deposit_reguler_history',
         deposit_reguler_historyController::class
     );
-    Route::get('depositCash/generatePdf/{id}', [deposit_reguler_historyController::class, 'generate_deposit_reguler_historyCard']);
+    Route::get('deposit_reguler_history/generatePdf/{id}', [deposit_reguler_historyController::class, 'generate_deposit_reguler_historyCard']);
 
     //deposit_package_history
     //put / update ga ada soalnya ini recipt
@@ -107,7 +109,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         'deposit_package_history',
         deposit_package_historyController::class
     );
-    Route::get('depositPackage/generatePdf/{id}', [deposit_package_historyController::class, 'generate_deposit_package_historyCard']);
+    Route::get('deposit_package_history/generatePdf/{id}', [deposit_package_historyController::class, 'generate_deposit_package_historyCard']);
 
     //promo_cash
     Route::apiResource(

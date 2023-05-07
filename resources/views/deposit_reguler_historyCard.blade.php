@@ -152,7 +152,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 text-right identity">
-                                <p>Kasir<br><strong>{{ $pegawai->name }}</strong></p>
+                                <p>Kasir :<br><strong>{{ $pegawai->no_pegawai}} / {{$pegawai->name }}</strong></p>
                             </div>
                         </div>
                     </div>

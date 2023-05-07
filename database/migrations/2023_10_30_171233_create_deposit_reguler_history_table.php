@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('deposit_reguler_history', function (Blueprint $table) {
             $table->id();
             $table->string('no_deposit_reguler_history');
-            $table->foreignId('id_promo_cash')->nullable()->constrained('promo_cash')->onUpdate('cascade');
-            $table->foreignId('id_member')->constrained('member')->onUpdate('cascade');
-            $table->foreignId('id_pegawai')->constrained('pegawai')->onUpdate('cascade');
+            $table->foreignId('id_promo_cash')->nullable()->constrained('promo_cash')->onDelete('set null')->onUpdate('cascade');
+            $table->foreignId('id_member')->constrained('member')->onDelete('set null')->onUpdate('cascade');
+            $table->foreignId('id_pegawai')->constrained('pegawai')->onDelete('set null')->onUpdate('cascade');
             $table->dateTime('date_time');
             $table->double('topup_amount');
             $table->double('bonus');

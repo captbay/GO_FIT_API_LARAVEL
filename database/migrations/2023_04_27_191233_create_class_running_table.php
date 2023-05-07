@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('day_name');
             $table->string('status');
-            $table->string('nama_instruktur_pengganti')->nullable();
+            // $table->string('nama_instruktur_pengganti')->nullable();
             $table->timestamps();
         });
     }

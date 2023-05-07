@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\deposit_reguler_history;
 use App\Models\member;
+use App\Models\pegawai;
 use App\Models\promo_cash;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -86,7 +87,7 @@ class deposit_reguler_historyController extends Controller
         $sisa = $member->jumlah_deposit_reguler;
         $total = $sisa + $request->topup_amount + $bonus;
         //check what promo gofit have
-        $promo_cash = promo_cash::all();
+        $promo_cash = promo_cash::latest()->get();
         foreach ($promo_cash as $promo_cash) {
             if ($member->jumlah_deposit_reguler >= $promo_cash['min_deposit_cash']) {
                 if ($request->topup_amount >= $promo_cash['min_topup_cash']) {
@@ -247,7 +248,7 @@ class deposit_reguler_historyController extends Controller
         }
 
         $member = member::find($deposit_reguler_history->id_member);
-        $pegawai = member::find($deposit_reguler_history->id_pegawai);
+        $pegawai = pegawai::find($deposit_reguler_history->id_pegawai);
 
         $data = [
             'deposit_reguler_history' => $deposit_reguler_history,
@@ -257,6 +258,6 @@ class deposit_reguler_historyController extends Controller
 
         $pdf = Pdf::loadview('deposit_reguler_historyCard', $data);
 
-        return $pdf->download('deposit_reguler_history_Card_' . $member->name . '.pdf');
+        return $pdf->output();
     }
 }

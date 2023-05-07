@@ -27,6 +27,7 @@ class pegawaiController extends Controller
         ], 200);
     }
 
+
     /**
      * Store a newly created resource in storage.
      *
@@ -197,5 +198,24 @@ class pegawaiController extends Controller
             'success' => false,
             'message' => 'pegawai Not Found',
         ], 404);
+    }
+
+
+    public function showOnlyKasir()
+    {
+        $pegawaiKasir = pegawai::where('role', 'kasir')->with(['users'])->get();
+
+        if ($pegawaiKasir) {
+            return response()->json([
+                'success' => true,
+                'message' => 'List Data pegawai Kasir',
+                'data'    => $pegawaiKasir
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'kasir Not Found',
+            ], 404);
+        }
     }
 }

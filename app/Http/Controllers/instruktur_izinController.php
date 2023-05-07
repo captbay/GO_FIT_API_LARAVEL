@@ -15,7 +15,7 @@ class instruktur_izin_izinController extends Controller
      */
     public function index()
     {
-        $instruktur_izin = instruktur_izin::with(['instruktur', 'instruktur_pengganti'])->get();
+        $instruktur_izin = instruktur_izin::with(['instruktur', 'instruktur_pengganti', 'class_running'])->get();
 
         return response()->json([
             'success' => true,
@@ -52,6 +52,7 @@ class instruktur_izin_izinController extends Controller
             'id_class_running' => $request->id_class_running,
             'alasan' => $request->alasan,
             'is_confirm' => $request->is_confirm,
+            'date' => $request->date,
         ]);
 
         if ($instruktur_izin) {
@@ -127,6 +128,7 @@ class instruktur_izin_izinController extends Controller
             'id_class_running' => $request->id_class_running,
             'alasan' => $request->alasan,
             'is_confirm' => $request->is_confirm,
+            'date' => $request->date,
         ]);
 
         return response()->json([

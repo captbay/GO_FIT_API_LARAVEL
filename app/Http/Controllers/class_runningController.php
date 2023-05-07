@@ -19,7 +19,7 @@ class class_runningController extends Controller
      */
     public function index()
     {
-        $class_running = class_running::with(['jadwal_umum'])->get();
+        $class_running = class_running::with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur_izin'])->get();
 
         return response()->json([
             'success' => true,
@@ -117,6 +117,7 @@ class class_runningController extends Controller
         $class_running_list = class_running::all();
         $jadwal_umum = jadwal_umum::all();
 
+        //kalo belum ada sama sekali
         if ($class_running_list->isEmpty() || $class_running_list->count() != $jadwal_umum->count()) {
             //delete all dulu
             DB::table('class_running')->delete();
@@ -148,6 +149,7 @@ class class_runningController extends Controller
                 $date_fix = Carbon::parse($date)->format('Y-m-d');
                 $status = '';
                 $day_name = Carbon::parse($date_fix)->format('l');
+                // dicek lagi pake date biasa apa date fix
                 $class_running = class_running::firstOrCreate([
                     'id_jadwal_umum' => $jadwal_umum['id'],
                     'capacity' => $jadwal_umum['capacity'],

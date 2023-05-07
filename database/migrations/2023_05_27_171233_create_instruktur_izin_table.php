@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('id_class_running')->constrained('class_running')->onUpdate('cascade')->onDelete('cascade');
             $table->text('alasan')->nullable();
             $table->boolean('is_confirm')->nullable();
+            $table->date('date');
             $table->timestamps();
         });
     }

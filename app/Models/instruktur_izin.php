@@ -23,6 +23,7 @@ class instruktur_izin extends Model
         'id_class_running',
         'alasan',
         'is_confirm',
+        'date'
     ];
 
     public function instruktur()
@@ -33,6 +34,11 @@ class instruktur_izin extends Model
     public function instruktur_pengganti()
     {
         return $this->belongsTo(instruktur::class, 'id_instruktur_pengganti');
+    }
+
+    public function class_running()
+    {
+        return $this->belongsTo(class_running::class, 'id_class_running');
     }
 
     public function getCreatedAtAttribute($value)
