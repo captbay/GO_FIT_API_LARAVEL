@@ -19,7 +19,7 @@ class class_runningController extends Controller
      */
     public function index()
     {
-        $class_running = class_running::with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur_izin'])->get();
+        $class_running = class_running::with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
 
         return response()->json([
             'success' => true,
@@ -152,8 +152,9 @@ class class_runningController extends Controller
                 // dicek lagi pake date biasa apa date fix
                 $class_running = class_running::firstOrCreate([
                     'id_jadwal_umum' => $jadwal_umum['id'],
+                    'id_instruktur' => $jadwal_umum['id_instruktur'],
                     'capacity' => $jadwal_umum['capacity'],
-                    'date' => $date,
+                    'date' => $date_fix,
                     'day_name' => $day_name,
                     'status' => $status,
                 ]);

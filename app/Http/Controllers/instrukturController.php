@@ -199,4 +199,26 @@ class instrukturController extends Controller
             'message' => 'instruktur Not Found',
         ], 404);
     }
+
+    public function resetTotalLate()
+    {
+        //get first date of month
+        $firstDate = Carbon::now()->startOfMonth()->toDateString();
+        $dateNow = Carbon::now()->toDateString();
+        if ($firstDate == $dateNow) {
+            //reset total late
+            $instruktur = instruktur::where('total_late', '>', 0)->update(['total_late' => 0]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Instruktur Reset Total Late',
+                'data'    => $instruktur
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Can only Reset at first date of month',
+            ], 409);
+        }
+    }
 }

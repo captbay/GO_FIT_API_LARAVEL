@@ -89,6 +89,10 @@
                         <div class="row">
                             <div class="col-xs-6">
                                 <address>
+                                    <address>
+                                        <strong>Nomor Struk:</strong><br>
+                                        {{ $aktivasi_history->no_aktivasi_history}}<br>
+                                    </address>
                                     <strong>Billed To:</strong><br>
                                     {{ $member->no_member }}<br>
                                     {{ $member->name }}<br>
@@ -137,12 +141,12 @@
                                             <td class="text-right">@currency($aktivasi_history->price)</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3"></td>
+                                            <td colspan="4"></td>
                                             <td class="text-right"><strong>Taxes</strong></td>
                                             <td class="text-right"><strong>N/A</strong></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="3">
+                                            <td colspan="4">
                                             </td>
                                             <td class="text-right"><strong>Total</strong></td>
                                             <td class="text-right"><strong>@currency($aktivasi_history->price)</strong></td>

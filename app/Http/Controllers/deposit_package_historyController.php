@@ -110,6 +110,33 @@ class deposit_package_historyController extends Controller
         //total price base on promo class
         $total_price = $jumlah_sesi * $class_detail->price;
 
+        //cek apakah paket sudah tersebut sudah ada habis atau sudah hangus ( intinya sisa deosit = 0)
+        $deposit_package_temp = deposit_package::all();
+        foreach ($deposit_package_temp as $deposit_package_temp) {
+            // class == member & paket expirednya belum habis
+            if (
+                $deposit_package_temp->id_class_detail == $request->id_class_detail &&
+                $deposit_package_temp->id_member == $request->id_member &&
+                $deposit_package_temp->expired_date > Carbon::now()->toDateString()
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Paket dikelas tersebut belum hangus masa berlakunya',
+                ], 409);
+            }
+            //class == member dan paketnya >= 0
+            if (
+                $deposit_package_temp->id_class_detail == $request->id_class_detail &&
+                $deposit_package_temp->id_member == $request->id_member &&
+                $deposit_package_temp->package_amount >= 0
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'paket dikelas tersebut masih ada dan belum 0 di member yang anda input',
+                ], 409);
+            }
+        }
+
         $deposit_package_history = deposit_package_history::create([
             'no_deposit_package_history' => $no_deposit_package_history,
             'id_promo_class' => $id_promo_class,

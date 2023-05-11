@@ -45,7 +45,7 @@ class deposit_reguler_historyController extends Controller
             'id_member' => 'required',
             'id_pegawai' => 'required',
             // 'date_time' => 'required',
-            'topup_amount' => 'required|integer',
+            'topup_amount' => 'required|integer|min:500000', //sekarang ada batasnya ya ges
             // 'bonus' => 'required',
             // 'sisa' => 'required',
             // 'total' => 'required'

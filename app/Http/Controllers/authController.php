@@ -39,9 +39,9 @@ class authController extends Controller
                 $expiredDate = Carbon::parse($member->expired_date_membership)->format('Y-m-d');
                 $today = Carbon::now()->format('Y-m-d');
 
-                $compareDateExprd = $expiredDate < $today;
-
-                if ($compareDateExprd || $member->expired_date_membership == NULL) {
+                // $compareDateExprd = $expiredDate >= $today;
+                // seharusnya lebih kecil atau sama dengan tanggal sekarang itu expired sudah
+                if ($expiredDate <= $today || $member->expired_date_membership == NULL || $member->status_membership == 0) {
                     $member->update([
                         'status_membership' => 0,
                     ]);

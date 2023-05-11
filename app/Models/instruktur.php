@@ -38,6 +38,11 @@ class instruktur extends Model
         return $this->hasMany(jadwal_umum::class,  'id_instruktur', 'id');
     }
 
+    public function class_running()
+    {
+        return $this->hasMany(class_running::class,  'id_instruktur', 'id');
+    }
+
     public function instruktur_presensi()
     {
         return $this->hasMany(instruktur_presensi::class,  'id_instruktur', 'id');

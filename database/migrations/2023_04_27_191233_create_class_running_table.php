@@ -15,9 +15,8 @@ return new class extends Migration
     {
         Schema::create('class_running', function (Blueprint $table) {
             $table->id();
-            //masih bingung 
-            // $table->foreignId('id_instruktur')->constrained('instruktur')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_jadwal_umum')->constrained('jadwal_umum')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('id_instruktur')->constrained('instruktur')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('capacity');
             $table->date('date');
             $table->string('day_name');

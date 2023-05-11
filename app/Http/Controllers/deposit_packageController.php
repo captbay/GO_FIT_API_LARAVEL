@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\deposit_package;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,6 +21,17 @@ class deposit_packageController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'List Data deposit_package',
+            'data'    => $deposit_package
+        ], 200);
+    }
+
+    public function indexExpiredPackage()
+    {
+        $deposit_package = deposit_package::where('expired_date', '<=', Carbon::now()->format('Y-m-d'))->with(['class_detail', 'member'])->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data deposit_package expired now',
             'data'    => $deposit_package
         ], 200);
     }

@@ -5,13 +5,16 @@ use App\Http\Controllers\authController;
 use App\Http\Controllers\class_detailController;
 use App\Http\Controllers\class_runningController;
 use App\Http\Controllers\deposit_package_historyController;
+use App\Http\Controllers\deposit_packageController;
 use App\Http\Controllers\deposit_reguler_historyController;
+use App\Http\Controllers\instruktur_izinController;
 use App\Http\Controllers\instrukturController;
 use App\Http\Controllers\jadwal_umumController;
 use App\Http\Controllers\memberController;
 use App\Http\Controllers\pegawaiController;
 use App\Http\Controllers\promo_cashController;
 use App\Http\Controllers\promo_classController;
+use App\Models\instruktur_izin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +54,9 @@ Route::group(['middleware' => 'auth:api'], function () {
         memberController::class
     );
     Route::get('member/generatePdf/{id}', [memberController::class, 'generateMemberCard']);
+    Route::get('showMemberExpired', [memberController::class, 'indexExpiredMember']);
+    Route::get('showMemberNotActive', [memberController::class, 'indexMembershipNotActiveMember']);
+    Route::post('deaktivasiMember/{id}', [memberController::class, 'deaktivasiMember']);
 
 
     //instruktur
@@ -58,6 +64,16 @@ Route::group(['middleware' => 'auth:api'], function () {
         'instruktur',
         instrukturController::class
     );
+    Route::post('resetTotalLate', [instrukturController::class, 'resetTotalLate']);
+
+    //instruktur_izin
+    Route::apiResource(
+        'instruktur_izin',
+        instruktur_izinController::class
+    );
+    Route::get('instrukturIzin/notConfirm', [instruktur_izinController::class, 'indexNotConfirm']);
+    Route::get('instrukturIzin/alreadyConfirm', [instruktur_izinController::class, 'indexAlredyConfirm']);
+    Route::post('instruktur_izin/confirmIzin/{id}', [instruktur_izinController::class, 'confirmIzin']);
 
     //pegawai
     Route::apiResource(
@@ -102,6 +118,13 @@ Route::group(['middleware' => 'auth:api'], function () {
         deposit_reguler_historyController::class
     );
     Route::get('deposit_reguler_history/generatePdf/{id}', [deposit_reguler_historyController::class, 'generate_deposit_reguler_historyCard']);
+
+    //deposit_package
+    Route::apiResource(
+        'deposit_package',
+        deposit_packageController::class
+    );
+    Route::get('showDepositPackageExpired', [deposit_packageController::class, 'indexExpiredPackage']);
 
     //deposit_package_history
     //put / update ga ada soalnya ini recipt

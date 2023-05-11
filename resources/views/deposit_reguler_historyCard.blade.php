@@ -89,6 +89,10 @@
                         <div class="row">
                             <div class="col-xs-6">
                                 <address>
+                                    <strong>Nomor Struk:</strong><br>
+                                    {{ $deposit_reguler_history->no_deposit_reguler_history }}<br>
+                                </address>
+                                <address>
                                     <strong>Billed To:</strong><br>
                                     {{ $member->no_member }}<br>
                                     {{ $member->name }}<br>

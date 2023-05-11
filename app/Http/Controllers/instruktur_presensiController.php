@@ -6,7 +6,7 @@ use App\Models\instruktur_presensi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class instruktur_presensi_presensiController extends Controller
+class instruktur_presensiController extends Controller
 {
     /**
      * Display a listing of the resource.

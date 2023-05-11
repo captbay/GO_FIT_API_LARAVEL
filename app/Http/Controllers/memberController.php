@@ -29,6 +29,28 @@ class memberController extends Controller
         ], 200);
     }
 
+    public function indexExpiredMember()
+    {
+        $member = member::where('expired_date_membership', '<=', Carbon::now()->format('Y-m-d'))->with(['users'])->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data member expired now',
+            'data'    => $member
+        ], 200);
+    }
+
+    public function indexMembershipNotActiveMember()
+    {
+        $member = member::where('status_membership', 0)->with(['users'])->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data member not active',
+            'data'    => $member
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -201,6 +223,31 @@ class memberController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'member Updated',
+            'data'    => $member
+        ], 200);
+    }
+
+    // buat deaktivasi
+    public function deaktivasiMember($id)
+    {
+        $member = member::find($id);
+        if (!$member) {
+            //data member not found
+            return response()->json([
+                'success' => false,
+                'message' => 'member Not Found',
+            ], 404);
+        }
+
+        //update member with new image
+        $member->update([
+            'expired_date_membership' => null,
+            'status_membership' => 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'status member Updated',
             'data'    => $member
         ], 200);
     }

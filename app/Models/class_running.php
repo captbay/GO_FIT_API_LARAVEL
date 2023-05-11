@@ -18,11 +18,8 @@ class class_running extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        // 'id_instruktur',
-        // 'nama_instruktur_pengganti',
         'id_jadwal_umum',
-        // 'start_class',
-        // 'end_class',
+        'id_instruktur',
         'capacity',
         'date',
         'day_name',
@@ -38,6 +35,11 @@ class class_running extends Model
     public function jadwal_umum()
     {
         return $this->belongsTo(jadwal_umum::class, 'id_jadwal_umum');
+    }
+
+    public function instruktur()
+    {
+        return $this->belongsTo(instruktur::class, 'id_instruktur');
     }
 
     public function instruktur_izin()

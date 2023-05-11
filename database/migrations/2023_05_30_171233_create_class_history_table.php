@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('class_history', function (Blueprint $table) {
             $table->id();
             $table->string('no_class_history');
-            $table->foreignId('id_class_booking')->constrained('class_booking')->onDelete('set null')->onUpdate('cascade');
+            $table->foreignId('id_class_booking')->nullable()->constrained('class_booking')->onDelete('set null')->onUpdate('cascade');
             $table->dateTime('date_time');
             $table->double('sisa_deposit');
             $table->timestamps();
