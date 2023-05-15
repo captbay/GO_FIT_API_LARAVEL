@@ -18,6 +18,7 @@ class class_booking extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'no_class_booking',
         'id_class_running',
         'id_member',
         'date_time',

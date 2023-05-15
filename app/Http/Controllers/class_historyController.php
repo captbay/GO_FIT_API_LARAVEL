@@ -15,7 +15,7 @@ class class_historyController extends Controller
      */
     public function index()
     {
-        $class_history = class_history::with(['class_booking'])->get();
+        $class_history = class_history::with(['class_booking.member', 'class_booking.class_running'])->get();
 
         return response()->json([
             'success' => true,

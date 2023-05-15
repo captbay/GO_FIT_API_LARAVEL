@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\aktivasi_historyController;
 use App\Http\Controllers\authController;
+use App\Http\Controllers\class_bookingController;
 use App\Http\Controllers\class_detailController;
 use App\Http\Controllers\class_runningController;
 use App\Http\Controllers\deposit_package_historyController;
@@ -66,13 +67,17 @@ Route::group(['middleware' => 'auth:api'], function () {
     );
     Route::post('resetTotalLate', [instrukturController::class, 'resetTotalLate']);
 
-    //instruktur_izin
+    //instruktur_izin web dan mobile
     Route::apiResource(
         'instruktur_izin',
         instruktur_izinController::class
     );
+    //store izin di mobile cek lagi kondisinya
     Route::get('instrukturIzin/notConfirm', [instruktur_izinController::class, 'indexNotConfirm']);
     Route::get('instrukturIzin/alreadyConfirm', [instruktur_izinController::class, 'indexAlredyConfirm']);
+    //nampilin tapi berdasarkan id instruktur dan username
+    Route::get('instrukturIzin/byId/{id}', [instruktur_izinController::class, 'indexByIdInstruktur']);
+    Route::get('instrukturIzin/byUsername/{username}', [instruktur_izinController::class, 'indexByUsernameInstruktur']);
     Route::post('instruktur_izin/confirmIzin/{id}', [instruktur_izinController::class, 'confirmIzin']);
 
     //pegawai
@@ -101,6 +106,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     );
     Route::post('class_running/generate', [class_runningController::class, 'generateDateAWeek']);
     Route::post('class_running/statusUpdate/{id}', [class_runningController::class, 'updateClassNotAvailable']);
+    // get by id isntruktur
+    Route::get('class_running/byIdInstruktur/{id}', [class_runningController::class, 'indexClassRunningByIdInstruktur']);
 
 
     //aktivasi_history
@@ -145,6 +152,13 @@ Route::group(['middleware' => 'auth:api'], function () {
         'promo_class',
         promo_classController::class
     );
+
+    //class_booking
+    Route::apiResource(
+        'class_booking',
+        class_bookingController::class
+    );
+    Route::get('class_booking/byIdMember/{id}', [class_bookingController::class, 'indexByIdMember']);
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

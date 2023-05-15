@@ -23,6 +23,7 @@ class class_package_history extends Model
         'date_time',
         'sisa_deposit_kelas',
         'expired_date',
+        'status',
     ];
 
     public function class_booking()

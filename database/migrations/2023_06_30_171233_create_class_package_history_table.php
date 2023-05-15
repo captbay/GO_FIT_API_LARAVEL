@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('no_class_package_history');
             $table->foreignId('id_class_booking')->nullable()->constrained('class_booking')->onDelete('set null')->onUpdate('cascade');
-            $table->dateTime('date_time');
-            $table->integer('sisa_deposit_kelas');
-            $table->date('expired_date');
+            $table->dateTime('date_time')->nullable();
+            $table->integer('sisa_deposit_kelas')->nullable();
+            $table->date('expired_date')->nullable();
+            $table->boolean('status')->nullable();
             $table->timestamps();
         });
     }

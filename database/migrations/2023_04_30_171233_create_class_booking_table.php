@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('class_booking', function (Blueprint $table) {
             $table->id();
+            $table->string('no_class_booking');
             $table->foreignId('id_class_running')->constrained('class_running')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_member')->constrained('member')->onUpdate('cascade')->onDelete('cascade');
             $table->dateTime('date_time');

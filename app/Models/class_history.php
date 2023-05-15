@@ -22,6 +22,7 @@ class class_history extends Model
         'id_class_booking',
         'date_time',
         'sisa_deposit',
+        'status',
     ];
 
     public function class_booking()

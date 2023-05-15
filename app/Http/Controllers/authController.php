@@ -24,6 +24,7 @@ class authController extends Controller
         }
 
         $user = User::where('username', $request->username)->first();
+        // $user = User::whereRaw('LOWER(`username`) LIKE ?', [$request->username])->first();
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -41,7 +42,7 @@ class authController extends Controller
 
                 // $compareDateExprd = $expiredDate >= $today;
                 // seharusnya lebih kecil atau sama dengan tanggal sekarang itu expired sudah
-                if ($expiredDate <= $today || $member->expired_date_membership == NULL || $member->status_membership == 0) {
+                if ($expiredDate < $today || $member->expired_date_membership == NULL || $member->status_membership == 0) {
                     $member->update([
                         'status_membership' => 0,
                     ]);

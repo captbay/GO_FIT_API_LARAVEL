@@ -28,6 +28,17 @@ class class_runningController extends Controller
         ], 200);
     }
 
+
+    public function indexClassRunningByIdInstruktur($id_instruktur)
+    {
+        $class_running = class_running::where('id_instruktur', $id_instruktur)->with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data class_running',
+            'data'    => $class_running
+        ], 200);
+    }
     // /**
     //  * Store a newly created resource in storage.
     //  *

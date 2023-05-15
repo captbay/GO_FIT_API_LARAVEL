@@ -49,6 +49,37 @@ class instruktur_izinController extends Controller
         ], 200);
     }
 
+    public function indexByIdInstruktur($id)
+    {
+        $instruktur_izin = instruktur_izin::where('id_instruktur', $id)->with(['instruktur', 'instruktur_pengganti', 'class_running.jadwal_umum.class_detail'])->get();
+
+        if ($instruktur_izin) {
+            return response()->json([
+                'success' => true,
+                'message' => 'List Data instruktur_izin untuk seseorang instruktur',
+                'data'    => $instruktur_izin
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data izin tidak ditemukan',
+                'data'    => ''
+            ], 404);
+        }
+    }
+
+    public function indexByUsernameInstruktur($username)
+    {
+        $instruktur = instruktur::where('no_instruktur', $username)->first();
+        $instruktur_izin = instruktur_izin::where('id_instruktur', $instruktur->id)->with(['instruktur', 'instruktur_pengganti', 'class_running.jadwal_umum.class_detail'])->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data instruktur_izin untuk seseorang instruktur',
+            'data'    => $instruktur_izin
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -59,16 +90,66 @@ class instruktur_izinController extends Controller
     {
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
-            'id_instruktur' => 'required',
-            'id_instruktur_pengganti' => 'required',
-            'id_class_running' => 'required',
-            'alasan' => 'required',
-            'is_confirm' => 'required|boolean',
+            'id_instruktur' => 'required', //siapa yang ijin
+            'id_instruktur_pengganti' => 'required', // tampilin semua instruktur kecuali yang minta izin ini
+            'id_class_running' => 'required', //kelas dimana dia ijin (buat nanti inputan kelas apa aja yang di ajarkan)
+            'alasan' => 'required', // alasannya
         ]);
 
         //response error validation
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+        //cek apakah dia sudah buat ijin yang sama
+        $cekAlreadyExist = instruktur_izin::all();
+        foreach ($cekAlreadyExist as $cekAlreadyExist) {
+            if ($cekAlreadyExist['id_instruktur'] == $request->id_instruktur &&  $cekAlreadyExist['id_class_running'] == $request->id_class_running) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda sudah membuat izin tersebut! Tunggu untuk di konfirmasi',
+                ], 409);
+            }
+        }
+
+        //cek apakah jadwal dan instuktur pengganti tersebut sudah ada atau belum
+        $class_running_instruktur = class_running::where('id_instruktur', $request->id_instruktur)->with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
+        $class_running_pengganti = class_running::where('id_instruktur', $request->id_instruktur_pengganti)->with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
+
+        if ($class_running_instruktur->count() == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Instruktur tidak memiliki jadwal mengajar!',
+            ], 409);
+        }
+
+        //cek apakah jadwal dan instuktur pengganti tersebut sudah ada atau belum
+        foreach ($class_running_instruktur as $running_instruktur) {
+            foreach ($class_running_pengganti as $running_pengganti) {
+                if (
+                    isset($running_instruktur->jadwal_umum) &&
+                    isset($running_pengganti->jadwal_umum) &&
+                    $running_instruktur->jadwal_umum->start_class == $running_pengganti->jadwal_umum->start_class &&
+                    $running_instruktur->jadwal_umum->day_name == $running_pengganti->jadwal_umum->day_name &&
+                    $running_instruktur->date == $running_pengganti->date
+                ) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Instruktur pengganti sudah memiliki jadwal yang bertabrakan!',
+                    ], 409);
+                }
+            }
+        }
+
+        //buat ijin max h-1
+        $class_runnning_date = class_running::find($request->id_class_running);
+        // $cekDateHMin1 = Carbon::parse($class_runnning_date->date)->subDay()->format('Y-m-d');
+        $dateNow = Carbon::now()->format('Y-m-d');
+        if ($class_runnning_date->date <= $dateNow) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak bisa membuat izin pada hari H kelas dan H+ kelas!',
+            ], 409);
         }
 
         $date = Carbon::now();
@@ -77,7 +158,7 @@ class instruktur_izinController extends Controller
             'id_instruktur_pengganti' => $request->id_instruktur_pengganti,
             'id_class_running' => $request->id_class_running,
             'alasan' => $request->alasan,
-            'is_confirm' => $request->is_confirm,
+            'is_confirm' => 0,
             'date' => $date,
         ]);
 
