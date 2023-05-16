@@ -286,6 +286,7 @@ class class_bookingController extends Controller
 
         //batal kelas h-1 max
         $class_running = class_running::with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->find($class_booking->id_class_running);
+
         $dateNow = Carbon::now()->format('Y-m-d');
         if ($class_running->date <= $dateNow) {
             return response()->json([
@@ -293,6 +294,10 @@ class class_bookingController extends Controller
                 'message' => 'Tidak bisa membatalkan booking kelas! (max h-1)',
             ], 409);
         } else {
+            //set class running capacity
+            $class_running->update([
+                'capacity' => $class_running->capacity + 1
+            ]);
             //delete rimwayat presensi yang belum di absensi
             if ($class_booking->class_history()->exists()) {
                 $class_booking->class_history()->delete();
