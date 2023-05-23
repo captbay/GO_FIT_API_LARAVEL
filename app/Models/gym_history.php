@@ -21,6 +21,7 @@ class gym_history extends Model
         'no_gym_history',
         'id_gym_booking',
         'date_time',
+        'status',
     ];
 
     public function gym_booking()

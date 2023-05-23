@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('gym_booking', function (Blueprint $table) {
             $table->id();
+            $table->string('no_gym_booking');
             $table->foreignId('id_gym')->constrained('gym')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_member')->constrained('member')->onUpdate('cascade')->onDelete('cascade');
+            $table->date('date_booking');
             $table->dateTime('date_time');
             $table->timestamps();
         });

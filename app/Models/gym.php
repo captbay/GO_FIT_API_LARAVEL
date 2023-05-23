@@ -20,7 +20,6 @@ class gym extends Model
      */
     protected $fillable = [
         'capacity',
-        'date',
         'start_gym',
         'end_gym',
     ];

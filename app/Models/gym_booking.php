@@ -18,8 +18,10 @@ class gym_booking extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'no_gym_booking',
         'id_gym',
         'id_member',
+        'date_booking',
         'date_time',
     ];
 

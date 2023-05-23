@@ -4,11 +4,17 @@ use App\Http\Controllers\aktivasi_historyController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\class_bookingController;
 use App\Http\Controllers\class_detailController;
+use App\Http\Controllers\class_historyController;
+use App\Http\Controllers\class_package_historyController;
 use App\Http\Controllers\class_runningController;
 use App\Http\Controllers\deposit_package_historyController;
 use App\Http\Controllers\deposit_packageController;
 use App\Http\Controllers\deposit_reguler_historyController;
+use App\Http\Controllers\gym_bookingController;
+use App\Http\Controllers\gym_historyController;
+use App\Http\Controllers\gymController;
 use App\Http\Controllers\instruktur_izinController;
+use App\Http\Controllers\instruktur_presensiController;
 use App\Http\Controllers\instrukturController;
 use App\Http\Controllers\jadwal_umumController;
 use App\Http\Controllers\memberController;
@@ -37,7 +43,11 @@ Route::post('users/store/admin', [authController::class, 'registerAdmin']);
 
 
 //sementara taruh di luar nanti pindahin di dalem group biar bisa cek login
-
+//class_running RSD
+Route::apiResource(
+    'class_running',
+    class_runningController::class
+);
 
 //harus login baru bisa akses
 Route::group(['middleware' => 'auth:api'], function () {
@@ -99,14 +109,10 @@ Route::group(['middleware' => 'auth:api'], function () {
         jadwal_umumController::class
     );
 
-    //class_running RSD
-    Route::apiResource(
-        'class_running',
-        class_runningController::class
-    );
+
     Route::post('class_running/generate', [class_runningController::class, 'generateDateAWeek']);
     Route::post('class_running/statusUpdate/{id}', [class_runningController::class, 'updateClassNotAvailable']);
-    // get by id isntruktur
+    // get by id instruktur yang login
     Route::get('class_running/byIdInstruktur/{id}', [class_runningController::class, 'indexClassRunningByIdInstruktur']);
 
 
@@ -158,7 +164,59 @@ Route::group(['middleware' => 'auth:api'], function () {
         'class_booking',
         class_bookingController::class
     );
+    //nampil data sesuai bookingan member siapa yang login mobile
     Route::get('class_booking/byIdMember/{id}', [class_bookingController::class, 'indexByIdMember']);
+    //nampilin data sesuai instruktur login + class mana yang di pilih
+    Route::get('class_booking/instrukturLogin/{id_instruktur}/{id_class_running}', [class_bookingController::class, 'seachClassByIdInstrukturLogin']);
+    //instruktur presensi member
+    Route::post('class_booking/presensiMember/{id}', [class_bookingController::class, 'presensiMember']);
+
+
+    //gym
+    Route::apiResource(
+        'gym',
+        gymController::class
+    );
+
+    //gym_booking
+    Route::apiResource(
+        'gym_booking',
+        gym_bookingController::class
+    );
+    Route::get('gym_booking/byIdMember/{id}', [gym_bookingController::class, 'indexByIdMember']);
+
+    //gym_history
+    Route::apiResource(
+        'gym_history',
+        gym_historyController::class
+    );
+    Route::get('gym_history/generatePdf/{id}', [gym_historyController::class, 'generate_gym_historyCard']);
+    Route::post('gym_history/updateStatus/{id}', [gym_historyController::class, 'updateStatus']);
+
+    //class_history
+    Route::apiResource(
+        'class_history',
+        class_historyController::class
+    );
+    Route::get('class_history/generatePdf/{id}', [class_historyController::class, 'generate_class_historyCard']);
+    // Route::post('class_history/updateStatus/{id}', [class_historyController::class, 'updateStatus']);
+
+    //class_package_history
+    Route::apiResource(
+        'class_package_history',
+        class_package_historyController::class
+    );
+    Route::get('class_package_history/generatePdf/{id}', [class_package_historyController::class, 'generate_class_package_historyCard']);
+    // Route::post('class_package_history/updateStatus/{id}', [class_package_historyController::class, 'updateStatus']);
+
+    //instruktur_presensi
+    Route::apiResource(
+        'instruktur_presensi',
+        instruktur_presensiController::class
+    );
+    Route::post('instruktur_presensi/startClassUpdate/{id}', [instruktur_presensiController::class, 'updateClassStartClass']);
+    Route::post('instruktur_presensi/endClassUpdate/{id}', [instruktur_presensiController::class, 'updateClassEndClass']);
+    // Route::post('instruktur_presensi/updateClassStatus/{id}', [instruktur_presensiController::class, 'updateClassStatus']);
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

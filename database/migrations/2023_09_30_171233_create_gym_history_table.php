@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('no_gym_history');
             $table->foreignId('id_gym_booking')->nullable()->constrained('gym_booking')->onDelete('set null')->onUpdate('cascade');
-            $table->dateTime('date_time');
+            $table->dateTime('date_time')->nullable();
+            $table->boolean('status')->nullable();
             $table->timestamps();
         });
     }

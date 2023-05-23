@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_jadwal_umum')->constrained('jadwal_umum')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_instruktur')->constrained('instruktur')->onUpdate('cascade')->onDelete('cascade');
+            $table->time('start_class');
+            $table->time('end_class');
             $table->integer('capacity');
             $table->date('date');
             $table->string('day_name');

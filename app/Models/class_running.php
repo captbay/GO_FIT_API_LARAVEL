@@ -20,6 +20,8 @@ class class_running extends Model
     protected $fillable = [
         'id_jadwal_umum',
         'id_instruktur',
+        'start_class',
+        'end_class',
         'capacity',
         'date',
         'day_name',
@@ -45,6 +47,11 @@ class class_running extends Model
     public function instruktur_izin()
     {
         return $this->hasOne(instruktur_izin::class,  'id_class_running', 'id');
+    }
+
+    public function instruktur_presensi()
+    {
+        return $this->hasOne(instruktur_presensi::class,  'id_class_running', 'id');
     }
 
     public function getCreatedAtAttribute($value)

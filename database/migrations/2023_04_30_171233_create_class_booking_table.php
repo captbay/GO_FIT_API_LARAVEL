@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('no_class_booking');
             $table->foreignId('id_class_running')->constrained('class_running')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('id_member')->constrained('member')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('metode_pembayaran');
+            $table->boolean('status')->nullable();
             $table->dateTime('date_time');
             $table->timestamps();
         });

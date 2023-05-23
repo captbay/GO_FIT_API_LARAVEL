@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('gym', function (Blueprint $table) {
             $table->id();
             $table->integer('capacity');
-            $table->date('date');
             $table->time('start_gym');
             $table->time('end_gym');
             $table->timestamps();

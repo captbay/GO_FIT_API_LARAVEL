@@ -21,6 +21,8 @@ class class_booking extends Model
         'no_class_booking',
         'id_class_running',
         'id_member',
+        'metode_pembayaran',
+        'status',
         'date_time',
     ];
 

@@ -36,7 +36,6 @@ class gymController extends Controller
         //Validasi Formulir
         $validator = Validator::make($request->all(), [
             'capacity' => 'required|integer',
-            'date' => 'required|date',
             'start_gym' => 'required|date_format:H:i',
             'end_gym' => 'required|date_format:H:i|after:start_gym'
         ]);
@@ -48,7 +47,6 @@ class gymController extends Controller
 
         $gym = gym::create([
             'capacity' => $request->capacity,
-            'date' => $request->date,
             'start_gym' => $request->start_gym,
             'end_gym' => $request->end_gym
         ]);
@@ -108,7 +106,6 @@ class gymController extends Controller
         //validate form
         $validator = Validator::make($request->all(), [
             'capacity' => 'required|integer',
-            'date' => 'required|date',
             'start_gym' => 'required|date_format:H:i',
             'end_gym' => 'required|date_format:H:i|after:start_gym'
         ]);

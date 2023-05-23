@@ -6,6 +6,7 @@ use App\Models\class_running;
 use App\Models\jadwal_umum;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,7 @@ class class_runningController extends Controller
      */
     public function index()
     {
-        $class_running = class_running::with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
+        $class_running = class_running::orderBy('date', 'ASC')->with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
 
         return response()->json([
             'success' => true,
@@ -39,86 +40,6 @@ class class_runningController extends Controller
             'data'    => $class_running
         ], 200);
     }
-    // /**
-    //  * Store a newly created resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function store(Request $request)
-    // {
-    //     //Validasi Formulir
-    //     $validator = Validator::make($request->all(), [
-    //         'id_instruktur' => 'required',
-    //         'id_class_detail' => 'required',
-    //         'start_class' => 'required',
-    //         'date' => 'required',
-    //     ]);
-
-    //     //response error validation
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 422);
-    //     }
-    //     //menambahkan 1 jam setelah start class karena emang sejam setelah start class pasti selesai
-    //     $end_class = Carbon::parse($request->start_class)->addHour();
-
-    //     //mengeset kapasitas karena max emang 10 saja (nanti kalo ada ikut berarti --)
-    //     $capacity = 10;
-
-    //     //status
-    //     $status = '';
-
-    //     //nama hari dari tanggal yang di pilih
-    //     $day_name = Carbon::parse($request->date)->format('l');
-
-    //     //cek apakah jadwal dan instuktur tersebut sudah ada atau belum
-    //     //jam harus dalam kontek H:i:s dibuatin string dulu
-    //     $start_class = Carbon::parse($request->start_class)->format('H:i:s');
-    //     $class_running_temp = class_running::all();
-    //     foreach ($class_running_temp as $class_running_temp) {
-    //         //intruktur = class = date = start_class 
-    //         if ($class_running_temp['id_instruktur'] == $request->id_instruktur && $class_running_temp['id_class_detail'] == $request->id_class_detail && $class_running_temp['date'] == $request->date  && $class_running_temp['start_class'] == $start_class) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'jadwal yang anda input sudah ada',
-    //             ], 409);
-    //         }
-    //         // instuktur = date = start class
-    //         else if ($class_running_temp['id_instruktur'] == $request->id_instruktur  && $class_running_temp['date'] == $request->date  && $class_running_temp['start_class'] == $start_class) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'instruktur tersebut sudah ada di jadwal yang anda input',
-    //             ], 409);
-    //         }
-    //     }
-
-    //     $class_running = class_running::firstOrCreate([
-    //         'id_instruktur' => $request->id_instruktur,
-    //         'id_class_detail' => $request->id_class_detail,
-    //         'start_class' => $start_class,
-    //         'end_class' => $end_class,
-    //         'capacity' => $capacity,
-    //         'date' => $request->date,
-    //         'day_name' => $day_name,
-    //         'status' => $status,
-    //     ]);
-
-    //     if ($class_running) {
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'class_running Created',
-    //             'data'    => $class_running,
-    //         ], 201);
-    //     } else {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'class_running Failed to Save',
-    //             'data'    => $class_running
-    //         ], 409);
-    //     }
-    // }
-
     /**
      * generate a week schedule of class_running store data.
      *
@@ -165,15 +86,23 @@ class class_runningController extends Controller
                     'id_jadwal_umum' => $jadwal_umum['id'],
                     'id_instruktur' => $jadwal_umum['id_instruktur'],
                     'capacity' => $jadwal_umum['capacity'],
+                    'start_class' => $jadwal_umum['start_class'],
+                    'end_class' => $jadwal_umum['end_class'],
                     'date' => $date_fix,
                     'day_name' => $day_name,
                     'status' => $status,
+                ]);
+
+                $instruktur_presensi = $class_running->instruktur_presensi()->create([
+                    'id_instruktur' => $class_running['id_instruktur'],
+                    'start_class' => $class_running['start_class'],
+                    'end_class' => $class_running['end_class'],
                 ]);
             }
 
             $class_running = class_running::all();
 
-            if ($class_running) {
+            if ($class_running && $instruktur_presensi) {
 
                 return response()->json([
                     'success' => true,
@@ -188,28 +117,60 @@ class class_runningController extends Controller
                 ], 409);
             }
         } else {
-            foreach ($class_running_list as $class_running_list) {
-                $date = $class_running_list->date;
-                $day_name = Carbon::parse($date)->format('l');
-                $class_running_list->update([
-                    'date' => Carbon::parse($date)->addDays(7),
-                    'day_name' => $day_name
-                ]);
-            }
-            $class_running_list = class_running::all();
-            if ($class_running_list) {
+            // Schedule already generated for the current week
+            // Check if the schedule for the next week exists
+            // mo akes setiap minggu siang
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'class_running scheduled generated successfully',
-                    'data'    => $class_running_list,
-                ], 201);
+            $now = Carbon::now();
+
+            if ($now->isSunday() && $now->hour >= 10) {
+
+                // Get the start and end dates for the next week
+                $nextWeekStart = Carbon::now()->copy()->startOfWeek()->addWeek();
+                $nextWeekEnd = Carbon::now()->copy()->endOfWeek()->addWeek();
+
+                // Create a CarbonPeriod object for the next week
+                $nextWeek = CarbonPeriod::create($nextWeekStart, $nextWeekEnd);
+
+                foreach ($class_running_list as $class_running) {
+                    foreach ($nextWeek as $nextWeekTemp) {
+                        if (Carbon::parse($nextWeekTemp)->format('Y-m-d') == Carbon::parse($class_running->date)->format('Y-m-d')) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'already been generated! :).',
+                            ], 400);
+                        }
+                    }
+                }
+
+                foreach ($class_running_list as $class_running_temp) {
+                    $date = $class_running_temp->date;
+                    $day_name = Carbon::parse($date)->format('l');
+                    $class_running_temp->update([
+                        'date' => Carbon::parse($date)->addDays(7),
+                        'day_name' => $day_name
+                    ]);
+                }
+                $class_running_list = class_running::all();
+                if ($class_running_list) {
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'class_running scheduled generated successfully',
+                        'data'    => $class_running_list,
+                    ], 201);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'class_running Failed to generate scheduled',
+                        'data'    => $class_running_list,
+                    ], 409);
+                }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'class_running Failed to generate scheduled',
-                    'data'    => $class_running_list,
-                ], 409);
+                    'message' => 'The schedule for the next week has already been generated. You Can Regenerate it at sunday after 10 AM :).',
+                ], 400);
             }
         }
     }

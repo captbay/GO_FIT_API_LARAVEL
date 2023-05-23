@@ -19,15 +19,21 @@ class instruktur_presensi extends Model
      */
     protected $fillable = [
         'id_instruktur',
+        'id_class_running',
         'status_class',
         'start_class',
         'end_class',
-        'date',
+        'date_time',
     ];
 
     public function instruktur()
     {
         return $this->belongsTo(instruktur::class, 'id_instruktur');
+    }
+
+    public function class_running()
+    {
+        return $this->belongsTo(class_running::class, 'id_class_running');
     }
 
     public function getCreatedAtAttribute($value)
