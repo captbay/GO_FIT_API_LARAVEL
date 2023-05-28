@@ -9,6 +9,7 @@ use App\Models\class_running;
 use App\Models\deposit_package;
 use App\Models\instruktur_presensi;
 use App\Models\member;
+use App\Models\member_activity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -306,6 +307,15 @@ class class_bookingController extends Controller
             ]);
 
             if ($class_booking && $class_history) {
+
+                member_activity::create([
+                    'id_member' => $member->id,
+                    'date_time' => $class_history->date_time,
+                    'name_activity' => 'Booking Class with Cash',
+                    'no_activity' => $class_history->no_class_history,
+                    'price_activity' => '- Rp.' . $uangBerkurang,
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'class_booking Updated and money decreased',
@@ -342,6 +352,15 @@ class class_bookingController extends Controller
             ]);
 
             if ($class_booking && $class_package_history) {
+
+                member_activity::create([
+                    'id_member' => $class_booking->member->id,
+                    'date_time' => $class_package_history->date_time,
+                    'name_activity' => 'Booking Class with Package',
+                    'no_activity' => $class_package_history->no_class_package_history,
+                    'price_activity' => '- 1 Package' . $class_booking->class_running->jadwal_umum->class_detail->name,
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'class_booking Updated and package decreased',

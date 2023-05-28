@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\instruktur;
+use App\Models\instruktur_activity;
 use App\Models\instruktur_presensi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,10 +20,28 @@ class instruktur_presensiController extends Controller
     {
         $instruktur_presensi = instruktur_presensi::with(['instruktur', 'class_running.jadwal_umum.class_detail'])->get();
 
+        // Get the start and end dates for the current week
+        $WeekStart = Carbon::now()->copy()->startOfWeek(Carbon::SUNDAY);
+        $WeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SATURDAY);
+
+        $temp = [];
+        //cek kondisi dimana antara week sekarang aja
+        foreach ($instruktur_presensi as $value) {
+            $classDate = Carbon::parse($value->class_running->date);
+            if ($classDate->isBetween($WeekStart, $WeekEnd)) {
+                array_push($temp, $value);
+            }
+        }
+
+        // Sort $temp array by date in ascending order
+        usort($temp, function ($a, $b) {
+            return strtotime($a->class_running->date) - strtotime($b->class_running->date);
+        });
+
         return response()->json([
             'success' => true,
-            'message' => 'List Data instruktur_presensi',
-            'data'    => $instruktur_presensi,
+            'message' => 'List Data instruktur_presensi for this week',
+            'data'    => $temp,
         ], 200);
     }
 
@@ -52,6 +71,13 @@ class instruktur_presensiController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        if ($instruktur_presensi->end_class != null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'end class already updated',
+            ], 409);
+        }
+
         if ($instruktur_presensi->class_running->status == "libur") {
             return response()->json([
                 'success' => false,
@@ -59,7 +85,7 @@ class instruktur_presensiController extends Controller
             ], 409);
         }
 
-        if ($request->end_class < $instruktur_presensi->start_class) {
+        if ($request->end_class < $instruktur_presensi->class_running->start_class) {
             return response()->json([
                 'success' => false,
                 'message' => 'end class must be greater than start class',
@@ -79,6 +105,15 @@ class instruktur_presensiController extends Controller
         ]);
 
         if ($instruktur_presensi) {
+
+            $dateTimeNow = Carbon::now();
+
+            instruktur_activity::create([
+                'id_instruktur' => $instruktur_presensi->id_instruktur,
+                'date_time' => $dateTimeNow,
+                'name_activity' => 'Instruktur Presensi End Class',
+                'description_activity' => 'Presensi End Class di kelas ' . $instruktur_presensi->class_running->jadwal_umum->class_detail->name . ' Tgl Class ' . $instruktur_presensi->class_running->date,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -120,6 +155,13 @@ class instruktur_presensiController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        if ($instruktur_presensi->start_class != null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'start class already updated',
+            ], 409);
+        }
+
         if ($instruktur_presensi->class_running->status == "libur") {
             return response()->json([
                 'success' => false,
@@ -127,12 +169,12 @@ class instruktur_presensiController extends Controller
             ], 409);
         }
 
-        if ($request->start_class < $instruktur_presensi->start_class) {
+        if ($request->start_class < $instruktur_presensi->class_running->start_class) {
             return response()->json([
                 'success' => false,
                 'message' => 'your input must be greater than start class already scheduled',
             ], 409);
-        } else if ($request->start_class > $instruktur_presensi->end_class) {
+        } else if ($request->start_class > $instruktur_presensi->class_running->end_class) {
             return response()->json([
                 'success' => false,
                 'message' => 'start class must be less than end class || YOU SO LATE!!',
@@ -165,6 +207,15 @@ class instruktur_presensiController extends Controller
         }
 
         if ($instruktur_presensi) {
+
+            $dateTimeNow = Carbon::now();
+
+            instruktur_activity::create([
+                'id_instruktur' => $instruktur_presensi->id_instruktur,
+                'date_time' => $dateTimeNow,
+                'name_activity' => 'Instruktur Presensi Start Class',
+                'description_activity' => 'Presensi Start Class di kelas ' . $instruktur_presensi->class_running->jadwal_umum->class_detail->name . ' Tgl Class ' . $instruktur_presensi->class_running->date,
+            ]);
 
             return response()->json([
                 'success' => true,

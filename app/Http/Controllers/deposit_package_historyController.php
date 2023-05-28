@@ -6,8 +6,10 @@ use App\Models\class_detail;
 use App\Models\deposit_package;
 use App\Models\deposit_package_history;
 use App\Models\member;
+use App\Models\member_activity;
 use App\Models\pegawai;
 use App\Models\promo_class;
+use App\Models\report_income;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -71,6 +73,14 @@ class deposit_package_historyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'member Not Found',
+            ], 404);
+        }
+
+        if ($member->status_membership == 0 || $member->expired_date_membership == null) {
+            //data member not found
+            return response()->json([
+                'success' => false,
+                'message' => 'member Not Active, Please Activate Member First',
             ], 404);
         }
 
@@ -157,6 +167,37 @@ class deposit_package_historyController extends Controller
                 'package_amount' => $deposit_package_history->package_amount,
                 'expired_date' => $deposit_package_history->expired_date,
             ]);
+
+            $classDetail = class_detail::find($deposit_package_history->id_class_detail);
+
+            member_activity::create([
+                'id_member' => $deposit_package->id_member,
+                'date_time' => $deposit_package_history->date_time,
+                'name_activity' => 'Top Up Paket Class',
+                'no_activity' => $deposit_package_history->no_deposit_package_history,
+                'price_activity' => '+ ' . $deposit_package_history->package_amount . 'Paket' . $classDetail->name,
+            ]);
+
+            //pembuatan report income
+            $tahun = Carbon::parse($deposit_package_history->date_time)->format('Y');
+            $bulan = Carbon::parse($deposit_package_history->date_time)->format('F');
+            //cari dulu apakah report income ada ga di tahun dan bulan itu
+            $report_income = report_income::where('tahun', $tahun)->where('bulan', $bulan)->first();
+            if ($report_income) {
+                $report_income->update([
+                    // 'aktivasi' => $aktivasi_history->price,
+                    'deposit' => $report_income->deposit + $deposit_package_history->total_price,
+                    'total' => $report_income->total + $deposit_package_history->total_price,
+                ]);
+            } else {
+                report_income::create([
+                    'tahun' => $tahun,
+                    'bulan' => $bulan,
+                    // 'aktivasi' => $aktivasi_history->price,
+                    'deposit' => $deposit_package_history->total_price,
+                    'total' => $deposit_package_history->total_price,
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

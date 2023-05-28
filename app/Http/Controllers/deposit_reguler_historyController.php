@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\deposit_reguler_history;
 use App\Models\member;
+use App\Models\member_activity;
 use App\Models\pegawai;
 use App\Models\promo_cash;
+use App\Models\report_income;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -64,6 +66,13 @@ class deposit_reguler_historyController extends Controller
                 'message' => 'member Not Found',
             ], 404);
         }
+        if ($member->status_membership == 0 || $member->expired_date_membership == null) {
+            //data member not found
+            return response()->json([
+                'success' => false,
+                'message' => 'member Not Active, Please Activate Member First',
+            ], 404);
+        }
 
         //membuatIddengan format(Xy) X= huruf dan Y = angka
         $count = DB::table('deposit_reguler_history')->count() + 1;
@@ -115,6 +124,36 @@ class deposit_reguler_historyController extends Controller
             $member->update([
                 'jumlah_deposit_reguler' => $total
             ]);
+
+            member_activity::create([
+                'id_member' => $deposit_reguler_history->id_member,
+                'date_time' => $deposit_reguler_history->date_time,
+                'name_activity' => 'Top Up Cash',
+                'no_activity' => $deposit_reguler_history->no_deposit_reguler_history,
+                'price_activity' => '+ Rp.' . $deposit_reguler_history->topup_amount,
+            ]);
+
+            //pembuatan report income
+            $tahun = Carbon::parse($deposit_reguler_history->date_time)->format('Y');
+            $bulan = Carbon::parse($deposit_reguler_history->date_time)->format('F');
+            //cari dulu apakah report income ada ga di tahun dan bulan itu
+            $report_income = report_income::where('tahun', $tahun)->where('bulan', $bulan)->first();
+            if ($report_income) {
+                $report_income->update([
+                    // 'aktivasi' => $aktivasi_history->price,
+                    'deposit' => $report_income->deposit + $deposit_reguler_history->topup_amount,
+                    'total' => $report_income->total + $deposit_reguler_history->topup_amount,
+                ]);
+            } else {
+                report_income::create([
+                    'tahun' => $tahun,
+                    'bulan' => $bulan,
+                    // 'aktivasi' => $aktivasi_history->price,
+                    'deposit' => $deposit_reguler_history->topup_amount,
+                    'total' => $deposit_reguler_history->topup_amount,
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'deposit_reguler_history Created and member updated successfully',

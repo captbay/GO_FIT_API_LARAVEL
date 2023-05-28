@@ -53,6 +53,11 @@ class instruktur extends Model
         return $this->hasMany(instruktur_izin::class,  'id_instruktur', 'id');
     }
 
+    public function instruktur_activity()
+    {
+        return $this->hasMany(instruktur_activity::class,  'id_instruktur', 'id');
+    }
+
     public function instruktur_izin_pengganti()
     {
         return $this->hasMany(instruktur_izin::class,  'id_instruktur_pengganti', 'id');

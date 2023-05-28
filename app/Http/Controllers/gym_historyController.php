@@ -6,6 +6,7 @@ use App\Models\gym;
 use App\Models\gym_booking;
 use App\Models\gym_history;
 use App\Models\member;
+use App\Models\member_activity;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -57,6 +58,25 @@ class gym_historyController extends Controller
             'date_time' => $date_time,
         ]);
 
+        if ($request->status == 1) {
+            member_activity::create([
+                'id_member' => $gym_history->gym_booking->member->id,
+                'date_time' => $gym_history->date_time,
+                'name_activity' => 'Hadir Booking Gym',
+                'no_activity' => $gym_history->no_gym_history,
+                'price_activity' => $gym_history->gym_booking->date_booking,
+            ]);
+        } else {
+            member_activity::create([
+                'id_member' => $gym_history->gym_booking->member->id,
+                'date_time' => $gym_history->date_time,
+                'name_activity' => 'Tidak Hadir Booking Gym',
+                'no_activity' => $gym_history->no_gym_history,
+                'price_activity' => $gym_history->gym_booking->date_booking,
+            ]);
+        }
+
+
         return response()->json([
             'success' => true,
             'message' => 'gym_history Updated',
@@ -84,15 +104,17 @@ class gym_historyController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $date_booking = Carbon::parse($request->date_booking)->format('Y-m-d');
+
         //cek apakah dia sudah buat data yang sama
         $cekAlreadyExist = gym_booking::all();
         foreach ($cekAlreadyExist as $cekAlreadyExist) {
-            if ($cekAlreadyExist['id_gym'] == $request->id_gym &&  $cekAlreadyExist['id_member'] == $request->id_member && $cekAlreadyExist['date_booking'] == $request->date_booking) {
+            if ($cekAlreadyExist['id_gym'] == $request->id_gym &&  $cekAlreadyExist['id_member'] == $request->id_member && $cekAlreadyExist['date_booking'] == $date_booking) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Member sudah booking gym tersebut! Ditunggu di GYM ya :)',
                 ], 409);
-            } else if ($cekAlreadyExist['id_member'] == $request->id_member && $cekAlreadyExist['date_booking'] == $request->date_booking) {
+            } else if ($cekAlreadyExist['id_member'] == $request->id_member && $cekAlreadyExist['date_booking'] == $date_booking) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Booking GYM Hanya Bisa 1X Dalam Sehari! :)',
@@ -103,6 +125,15 @@ class gym_historyController extends Controller
         //ambil semua data
         $member = member::with(['users'])->find($request->id_member);
         $gym = gym::find($request->id_gym);
+
+        //cek apakah sudah booking sejumlah kapasitas gym
+        $cekAlreadyBooked = gym_booking::where('id_gym', $request->id_gym)->where('date_booking', $date_booking)->count();
+        if ($cekAlreadyBooked >= $gym->capacity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kapasitas Gym ini sudah penuh',
+            ], 409);
+        }
 
         //memeriksa status aktif untuk member
         if (!$member || $member->status_membership == 0) {
@@ -152,9 +183,6 @@ class gym_historyController extends Controller
         ]);
 
         if ($gym_booking && $gym_history) {
-            $gym->update([
-                'capacity' => $gym->capacity - 1
-            ]);
 
             return response()->json([
                 'success' => true,

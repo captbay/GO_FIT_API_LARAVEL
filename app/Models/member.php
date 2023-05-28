@@ -50,6 +50,11 @@ class member extends Model
         return $this->hasMany(deposit_package_history::class,  'id_member', 'id');
     }
 
+    public function member_activity()
+    {
+        return $this->hasMany(member_activity::class,  'id_member', 'id');
+    }
+
     public function gym_booking()
     {
         return $this->hasMany(gym_booking::class,  'id_member', 'id');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\gym;
 use App\Models\gym_booking;
 use App\Models\member;
+use App\Models\member_activity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +82,15 @@ class gym_bookingController extends Controller
         $member = member::with(['users'])->find($request->id_member);
         $gym = gym::find($request->id_gym);
 
+        //cek apakah sudah booking sejumlah kapasitas gym
+        $cekAlreadyBooked = gym_booking::where('id_gym', $request->id_gym)->where('date_booking', $date_booking)->count();
+        if ($cekAlreadyBooked >= $gym->capacity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kapasitas Gym ini sudah penuh',
+            ], 409);
+        }
+
         //memeriksa status aktif untuk member
         if (!$member || $member->status_membership == 0) {
             return response()->json([
@@ -129,9 +139,6 @@ class gym_bookingController extends Controller
         ]);
 
         if ($gym_booking && $gym_history) {
-            $gym->update([
-                'capacity' => $gym->capacity - 1
-            ]);
 
             return response()->json([
                 'success' => true,
@@ -227,8 +234,6 @@ class gym_bookingController extends Controller
             ], 404);
         }
 
-        $gym = gym::find($gym_booking->id_gym);
-
         //batal max h-1
         $dateNow = Carbon::now()->format('Y-m-d');
         if ($gym_booking->date_booking <= $dateNow) {
@@ -237,10 +242,6 @@ class gym_bookingController extends Controller
                 'message' => 'Tidak bisa membatalkan booking gym! (max h-1)',
             ], 409);
         } else {
-            //set gym running capacity
-            $gym->update([
-                'capacity' => $gym->capacity + 1
-            ]);
             //delete rimwayat presensi yang belum di absensi
             if ($gym_booking->gym_history()->exists()) {
                 $gym_booking->gym_history()->delete();

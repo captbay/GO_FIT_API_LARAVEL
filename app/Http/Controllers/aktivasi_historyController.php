@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\aktivasi_history;
 use App\Models\member;
+use App\Models\member_activity;
 use App\Models\pegawai;
+use App\Models\report_income;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -103,6 +105,35 @@ class aktivasi_historyController extends Controller
                 'expired_date_membership' => $expired_date,
                 'status_membership' => 1,
             ]);
+
+            member_activity::create([
+                'id_member' => $aktivasi_history->id_member,
+                'date_time' => $aktivasi_history->date_time,
+                'name_activity' => 'Aktivasi Membership',
+                'no_activity' => $aktivasi_history->no_aktivasi_history,
+                'price_activity' => 'Rp.' . $aktivasi_history->price,
+            ]);
+
+            //pembuatan report income
+            $tahun = Carbon::parse($aktivasi_history->date_time)->format('Y');
+            $bulan = Carbon::parse($aktivasi_history->date_time)->format('F');
+            //cari dulu apakah report income ada ga di tahun dan bulan itu
+            $report_income = report_income::where('tahun', $tahun)->where('bulan', $bulan)->first();
+            if ($report_income) {
+                $report_income->update([
+                    'aktivasi' => $report_income->aktivasi + $aktivasi_history->price,
+                    // 'deposit' => $aktivasi_history->no_aktivasi_history,
+                    'total' => $report_income->total + $aktivasi_history->price,
+                ]);
+            } else {
+                report_income::create([
+                    'tahun' => $tahun,
+                    'bulan' => $bulan,
+                    'aktivasi' => $aktivasi_history->price,
+                    // 'deposit' => $aktivasi_history->no_aktivasi_history,
+                    'total' => $aktivasi_history->price,
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

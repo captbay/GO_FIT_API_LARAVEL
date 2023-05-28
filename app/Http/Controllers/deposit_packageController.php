@@ -25,6 +25,30 @@ class deposit_packageController extends Controller
         ], 200);
     }
 
+    //get by id member who login
+    public function indexByIdMember($id_member)
+    {
+        $deposit_package = deposit_package::where('id_member', $id_member)->with(['class_detail', 'member'])->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data deposit_package',
+            'data'    => $deposit_package
+        ], 200);
+    }
+
+    //count how many member have package by id member
+    public function countByIdMember($id_member)
+    {
+        $deposit_package_count = deposit_package::where('id_member', $id_member)->count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jumlah Paket Member',
+            'data'    => $deposit_package_count
+        ], 200);
+    }
+
     public function indexExpiredPackage()
     {
         $deposit_package = deposit_package::where('expired_date', '<=', Carbon::now()->format('Y-m-d'))->with(['class_detail', 'member'])->get();

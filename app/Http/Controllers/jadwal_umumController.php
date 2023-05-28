@@ -16,7 +16,7 @@ class jadwal_umumController extends Controller
      */
     public function index()
     {
-        $jadwal_umum = jadwal_umum::with(['instruktur', 'class_detail'])->get();
+        $jadwal_umum = jadwal_umum::orderBy('day_name', 'ASC')->with(['instruktur', 'class_detail'])->get();
 
         return response()->json([
             'success' => true,

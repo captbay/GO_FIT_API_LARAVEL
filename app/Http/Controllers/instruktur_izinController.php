@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\class_running;
 use App\Models\instruktur;
+use App\Models\instruktur_activity;
 use App\Models\instruktur_izin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -166,7 +167,7 @@ class instruktur_izinController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'instruktur_izin Created',
+                'message' => 'Izin Created',
                 'data'    => $instruktur_izin
             ], 201);
         } else {
@@ -269,10 +270,19 @@ class instruktur_izinController extends Controller
         $instrukturAsliName = $instruktur_izin->instruktur->name;
         $statusTemp = 'menggantikan ' . $instrukturAsliName;
         //update class_running status
-        $class_running = class_running::find($instruktur_izin->id_class_running);
+        $class_running = class_running::with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->find($instruktur_izin->id_class_running);
         $class_running->update([
             'id_instruktur' => $instrukturPengganti->id,
             'status' => $statusTemp,
+        ]);
+
+        $dateTimeNow = Carbon::now();
+
+        instruktur_activity::create([
+            'id_instruktur' => $instruktur_izin->id_instruktur,
+            'date_time' => $dateTimeNow,
+            'name_activity' => 'Instruktur izin',
+            'description_activity' => 'Izin di kelas ' . $class_running->jadwal_umum->class_detail->name . ' Tgl Class ' . $class_running->date,
         ]);
 
         return response()->json([
