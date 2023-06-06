@@ -174,7 +174,7 @@ class reportAllController extends Controller
             $total += $report['total'];
         }
 
-        $dateNow = Carbon::now()->format('d F Y');
+        $dateNow = Carbon::now()->copy()->format('d F Y');
 
         $data = [
             'report_income' => $completeData,
@@ -211,6 +211,8 @@ class reportAllController extends Controller
             ->select('class_detail.name AS nama_kelas', 'instruktur.name AS nama_instruktur')
             ->selectRaw('COALESCE(COUNT(CASE WHEN class_booking.status = 1 THEN class_booking.id END), 0) AS jumlah_peserta')
             ->selectRaw('CAST(COALESCE(SUM(CASE WHEN class_running.status = "libur" THEN 1 ELSE 0 END), 0) AS UNSIGNED) AS jumlah_libur_kelas')
+            ->whereMonth('class_running.date', $bulan)
+            ->whereYear('class_running.date', $tahun)
             ->groupBy('class_detail.name', 'instruktur.name')
             ->orderBy('class_detail.name', 'ASC')
             ->distinct()
@@ -278,20 +280,22 @@ class reportAllController extends Controller
             ->select('class_detail.name AS nama_kelas', 'instruktur.name AS nama_instruktur')
             ->selectRaw('COALESCE(COUNT(CASE WHEN class_booking.status = 1 THEN class_booking.id END), 0) AS jumlah_peserta')
             ->selectRaw('CAST(COALESCE(SUM(CASE WHEN class_running.status = "libur" THEN 1 ELSE 0 END), 0) AS UNSIGNED) AS jumlah_libur_kelas')
+            ->whereMonth('class_running.date', $bulan)
+            ->whereYear('class_running.date', $tahun)
             ->groupBy('class_detail.name', 'instruktur.name')
             ->orderBy('class_detail.name', 'ASC')
             ->distinct()
             ->get();
 
 
-        $dateNow = Carbon::now()->format('d F Y');
-        $yearChoose = Carbon::parse($tahun)->format('Y');
+        $dateNow = Carbon::now()->copy()->format('d F Y');
+        // $yearChoose = Carbon::parse($tahun)->format('Y');
         $monthChoose = Carbon::createFromFormat('m', $bulan)->format('F');
 
         $data = [
             'report_class' => $report_class,
             'dateNow' => $dateNow,
-            'yearChoose' => $yearChoose,
+            'yearChoose' => $tahun,
             'monthChoose' => $monthChoose,
         ];
 
@@ -461,14 +465,14 @@ class reportAllController extends Controller
             $total = $total + $report->jumlah_member;
         }
 
-        $dateNow = Carbon::now()->format('d F Y');
-        $yearChoose = Carbon::parse($tahun)->format('Y');
+        $dateNow = Carbon::now()->copy()->format('d F Y');
+        // $yearChoose = Carbon::parse($tahun)->format('Y');
         $monthChoose = Carbon::createFromFormat('m', $bulan)->format('F');
 
         $data = [
             'report_gym' => $dataArray,
             'dateNow' => $dateNow,
-            'yearChoose' => $yearChoose,
+            'yearChoose' => $tahun,
             'monthChoose' => $monthChoose,
             'total' => $total
         ];
@@ -488,17 +492,41 @@ class reportAllController extends Controller
     {
         // membuat report kinerja instruktur berdasarkan tabel instruktur urut berdasarkan waktu terlambat ascending
         // ambil data dari tabel instruktur, instruktur_izin, instruktur_presensi, dan class_running yang libur berdasarkan id_instruktur
+        // $report = DB::table('instruktur')
+        //     ->leftJoin('instruktur_presensi', function ($join) use ($tahun, $bulan) {
+        //         $join->on('instruktur.id', '=', 'instruktur_presensi.id_instruktur')
+        //             ->whereRaw('YEAR(instruktur_presensi.date_time) = ?', $tahun)
+        //             ->whereRaw('MONTH(instruktur_presensi.date_time) = ?', $bulan);
+        //     })
+        //     ->select(
+        //         'instruktur.id',
+        //         'instruktur.name as nama_instruktur',
+        //         DB::raw('SUM(CASE WHEN instruktur_presensi.status_class = 1 THEN 1 ELSE 0 END) as jumlah_hadir'),
+        //         DB::raw('(SELECT COUNT(*) FROM instruktur_izin WHERE instruktur_izin.id_instruktur = instruktur.id AND instruktur_izin.is_confirm = 1) as jumlah_libur'),
+        //         'instruktur.total_late as waktu_terlambat'
+        //     )
+        //     ->groupBy('instruktur.id', 'instruktur.name', 'instruktur.total_late')
+        //     ->orderBy('instruktur.total_late', 'asc')
+        //     ->orderBy('instruktur.name', 'asc')
+        //     ->get();
+
         $report = DB::table('instruktur')
             ->leftJoin('instruktur_presensi', function ($join) use ($tahun, $bulan) {
                 $join->on('instruktur.id', '=', 'instruktur_presensi.id_instruktur')
                     ->whereRaw('YEAR(instruktur_presensi.date_time) = ?', $tahun)
                     ->whereRaw('MONTH(instruktur_presensi.date_time) = ?', $bulan);
             })
+            ->leftJoin('instruktur_izin', function ($join) use ($tahun, $bulan) {
+                $join->on('instruktur.id', '=', 'instruktur_izin.id_instruktur')
+                    ->whereRaw('YEAR(instruktur_izin.date) = ?', $tahun)
+                    ->whereRaw('MONTH(instruktur_izin.date) = ?', $bulan)
+                    ->where('instruktur_izin.is_confirm', 1);
+            })
             ->select(
                 'instruktur.id',
                 'instruktur.name as nama_instruktur',
                 DB::raw('SUM(CASE WHEN instruktur_presensi.status_class = 1 THEN 1 ELSE 0 END) as jumlah_hadir'),
-                DB::raw('(SELECT COUNT(*) FROM instruktur_izin WHERE instruktur_izin.id_instruktur = instruktur.id AND instruktur_izin.is_confirm = 1) as jumlah_libur'),
+                DB::raw('COUNT(instruktur_izin.id) as jumlah_libur'),
                 'instruktur.total_late as waktu_terlambat'
             )
             ->groupBy('instruktur.id', 'instruktur.name', 'instruktur.total_late')
@@ -515,27 +543,52 @@ class reportAllController extends Controller
 
     public function howManyMonthYearInKinerjaInstruktur()
     {
-        // mencari data month dalam instruktur_presensi
-        $listMonth = DB::table('instruktur_presensi')
+        $listMonthPresensi = DB::table('instruktur_presensi')
             ->select(DB::raw('MONTH(instruktur_presensi.date_time) as value, MONTHNAME(instruktur_presensi.date_time) as text'))
-            ->whereNotNull('instruktur_presensi.date_time')
+            ->whereNotNull('instruktur_presensi.date_time');
+
+        $listMonthIzin = DB::table('instruktur_izin')
+            ->select(DB::raw('MONTH(instruktur_izin.date) as value, MONTHNAME(instruktur_izin.date) as text'))
+            ->whereNotNull('instruktur_izin.date');
+
+        $listMonth = $listMonthPresensi
+            ->union($listMonthIzin)
             ->groupBy('value', 'text')
             ->orderBy('value', 'asc')
             ->get();
 
+        // Remove duplicate values
+        $listMonth = $listMonth->unique();
+
+        // If you want to convert the collection to an array, you can use:
+        $listMonthArray = $listMonth->toArray();
+
         // mencari data year dalam instruktur_presensi
-        $listYear = DB::table('instruktur_presensi')
+        $listYearPresensi = DB::table('instruktur_presensi')
             ->select(DB::raw('YEAR(instruktur_presensi.date_time) as tahun'))
-            ->whereNotNull('instruktur_presensi.date_time')
+            ->whereNotNull('instruktur_presensi.date_time');
+
+        $listYearIzin = DB::table('instruktur_izin')
+            ->select(DB::raw('YEAR(instruktur_izin.date) as tahun'))
+            ->whereNotNull('instruktur_izin.date');
+
+        $listYear = $listYearPresensi
+            ->union($listYearIzin)
             ->groupBy('tahun')
             ->orderBy('tahun', 'asc')
             ->get();
 
+        // Remove duplicate values
+        $listYear = $listYear->unique();
+
+        // If you want to convert the collection to an array, you can use:
+        $listYearArray = $listYear->toArray();
+
         return response()->json([
             'success' => true,
             'message' => 'List Data Month Year',
-            'bulan'    => $listMonth,
-            'tahun'    => $listYear
+            'bulan'    => $listMonthArray,
+            'tahun'    => $listYearArray
         ], 200);
     }
 
@@ -555,17 +608,23 @@ class reportAllController extends Controller
             ], 404);
         }
 
-        $report_instruktur = DB::table('instruktur')
+        $report = DB::table('instruktur')
             ->leftJoin('instruktur_presensi', function ($join) use ($tahun, $bulan) {
                 $join->on('instruktur.id', '=', 'instruktur_presensi.id_instruktur')
                     ->whereRaw('YEAR(instruktur_presensi.date_time) = ?', $tahun)
                     ->whereRaw('MONTH(instruktur_presensi.date_time) = ?', $bulan);
             })
+            ->leftJoin('instruktur_izin', function ($join) use ($tahun, $bulan) {
+                $join->on('instruktur.id', '=', 'instruktur_izin.id_instruktur')
+                    ->whereRaw('YEAR(instruktur_izin.date) = ?', $tahun)
+                    ->whereRaw('MONTH(instruktur_izin.date) = ?', $bulan)
+                    ->where('instruktur_izin.is_confirm', 1);
+            })
             ->select(
                 'instruktur.id',
                 'instruktur.name as nama_instruktur',
                 DB::raw('SUM(CASE WHEN instruktur_presensi.status_class = 1 THEN 1 ELSE 0 END) as jumlah_hadir'),
-                DB::raw('(SELECT COUNT(*) FROM instruktur_izin WHERE instruktur_izin.id_instruktur = instruktur.id AND instruktur_izin.is_confirm = 1) as jumlah_libur'),
+                DB::raw('COUNT(instruktur_izin.id) as jumlah_libur'),
                 'instruktur.total_late as waktu_terlambat'
             )
             ->groupBy('instruktur.id', 'instruktur.name', 'instruktur.total_late')
@@ -574,14 +633,14 @@ class reportAllController extends Controller
             ->get();
 
 
-        $dateNow = Carbon::now()->format('d F Y');
-        $yearChoose = Carbon::parse($tahun)->format('Y');
+        $dateNow = Carbon::now()->copy()->format('d F Y');
+        // $yearChoose = Carbon::parse($tahun)->format('Y');
         $monthChoose = Carbon::createFromFormat('m', $bulan)->format('F');
 
         $data = [
-            'report_instruktur' => $report_instruktur,
+            'report_instruktur' => $report,
             'dateNow' => $dateNow,
-            'yearChoose' => $yearChoose,
+            'yearChoose' => $tahun,
             'monthChoose' => $monthChoose,
         ];
 
