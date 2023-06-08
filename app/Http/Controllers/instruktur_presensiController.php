@@ -63,7 +63,7 @@ class instruktur_presensiController extends Controller
 
         //validate form
         $validator = Validator::make($request->all(), [
-            'end_class' => 'required|date_format:H:i',
+            'end_class' => 'required',
         ]);
 
         //response error validation
@@ -147,7 +147,7 @@ class instruktur_presensiController extends Controller
 
         //validate form
         $validator = Validator::make($request->all(), [
-            'start_class' => 'required|date_format:H:i',
+            'start_class' => 'required',
         ]);
 
         //response error validation
@@ -291,8 +291,8 @@ class instruktur_presensiController extends Controller
     //     $validator = Validator::make($request->all(), [
     //         'id_instruktur' => 'required',
     //         'status_class' => 'required|boolean',
-    //         'start_class' => 'required|date_format:H:i',
-    //         'end_class' => 'required|date_format:H:i|after:start_class',
+    //         'start_class' => 'required',
+    //         'end_class' => 'required|after:start_class',
     //         'date_time' => 'required',
     //     ]);
 
@@ -366,8 +366,8 @@ class instruktur_presensiController extends Controller
         $validator = Validator::make($request->all(), [
             'id_instruktur' => 'required',
             'status_class' => 'required|boolean',
-            'start_class' => 'required|date_format:H:i',
-            'end_class' => 'required|date_format:H:i|after:start_class',
+            'start_class' => 'required',
+            'end_class' => 'required|after:start_class',
             'date_time' => 'required|date',
         ]);
 

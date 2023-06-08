@@ -66,7 +66,7 @@ class deposit_package_historyController extends Controller
             ], 404);
         }
 
-        //class detail find
+        //member find
         $member = member::find($request->id_member);
         if (!$member) {
             //data member not found
@@ -120,29 +120,33 @@ class deposit_package_historyController extends Controller
         //total price base on promo class
         $total_price = $jumlah_sesi * $class_detail->price;
 
+        // cek apakah saldo member cukup
+        if ($member->jumlah_deposit_reguler == 0 || $member->jumlah_deposit_reguler == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Saldo Member Deposit Reguler Empty',
+            ], 404);
+        } else if ($member->jumlah_deposit_reguler < $total_price) {
+            //data member not found
+            return response()->json([
+                'success' => false,
+                'message' => 'member Deposit Reguler Not Enough to buy this package',
+            ], 404);
+        }
+
         //cek apakah paket sudah tersebut sudah ada habis atau sudah hangus ( intinya sisa deosit = 0)
         $deposit_package_temp = deposit_package::all();
         foreach ($deposit_package_temp as $deposit_package_temp) {
-            // class == member & paket expirednya belum habis
+            //class == member dan paketnya >= 0 & paket expirednya belum habis
             if (
                 $deposit_package_temp->id_class_detail == $request->id_class_detail &&
                 $deposit_package_temp->id_member == $request->id_member &&
+                $deposit_package_temp->package_amount > 0 &&
                 $deposit_package_temp->expired_date > Carbon::now()->toDateString()
             ) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Paket dikelas tersebut belum hangus masa berlakunya',
-                ], 409);
-            }
-            //class == member dan paketnya >= 0
-            if (
-                $deposit_package_temp->id_class_detail == $request->id_class_detail &&
-                $deposit_package_temp->id_member == $request->id_member &&
-                $deposit_package_temp->package_amount >= 0
-            ) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'paket dikelas tersebut masih ada dan belum 0 di member yang anda input',
+                    'message' => 'paket dikelas tersebut masih ada (belum exp & belum 0) di member yang anda input',
                 ], 409);
             }
         }
@@ -160,6 +164,12 @@ class deposit_package_historyController extends Controller
         ]);
 
         if ($deposit_package_history) {
+            //update member uang karena yang berkurang deposit reguler
+            $member = member::find($request->id_member);
+            $member->update([
+                'jumlah_deposit_reguler' => $member->jumlah_deposit_reguler - $total_price
+            ]);
+
             //memasukan deposit ke dalam deposit member
             $deposit_package = deposit_package::create([
                 'id_class_detail' => $deposit_package_history->id_class_detail,
@@ -177,27 +187,6 @@ class deposit_package_historyController extends Controller
                 'no_activity' => $deposit_package_history->no_deposit_package_history,
                 'price_activity' => '+ ' . $deposit_package_history->package_amount . 'Paket' . $classDetail->name,
             ]);
-
-            //pembuatan report income
-            $tahun = Carbon::parse($deposit_package_history->date_time)->format('Y');
-            $bulan = Carbon::parse($deposit_package_history->date_time)->format('F');
-            //cari dulu apakah report income ada ga di tahun dan bulan itu
-            $report_income = report_income::where('tahun', $tahun)->where('bulan', $bulan)->first();
-            if ($report_income) {
-                $report_income->update([
-                    // 'aktivasi' => $aktivasi_history->price,
-                    'deposit' => $report_income->deposit + $deposit_package_history->total_price,
-                    'total' => $report_income->total + $deposit_package_history->total_price,
-                ]);
-            } else {
-                report_income::create([
-                    'tahun' => $tahun,
-                    'bulan' => $bulan,
-                    // 'aktivasi' => $aktivasi_history->price,
-                    'deposit' => $deposit_package_history->total_price,
-                    'total' => $deposit_package_history->total_price,
-                ]);
-            }
 
             return response()->json([
                 'success' => true,
@@ -335,13 +324,15 @@ class deposit_package_historyController extends Controller
         $member = member::find($deposit_package_history->id_member);
         $pegawai = pegawai::find($deposit_package_history->id_pegawai);
         $promo_class = promo_class::find($deposit_package_history->id_promo_class);
+        $dateTime = Carbon::now()->format('Y-m-d H:i:s');
 
         $data = [
             'deposit_package_history' => $deposit_package_history,
             'member' => $member,
             'pegawai' => $pegawai,
             'class_detail' => $class_detail,
-            'promo_class' => $promo_class
+            'promo_class' => $promo_class,
+            'dateTime' => $dateTime
         ];
 
         $pdf = Pdf::loadview('deposit_package_historyCard', $data);

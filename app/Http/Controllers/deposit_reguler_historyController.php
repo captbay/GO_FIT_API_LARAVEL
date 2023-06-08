@@ -288,11 +288,13 @@ class deposit_reguler_historyController extends Controller
 
         $member = member::find($deposit_reguler_history->id_member);
         $pegawai = pegawai::find($deposit_reguler_history->id_pegawai);
+        $dateTime = Carbon::now()->format('Y-m-d H:i:s');
 
         $data = [
             'deposit_reguler_history' => $deposit_reguler_history,
             'member' => $member,
             'pegawai' => $pegawai,
+            'dateTime' => $dateTime
         ];
 
         $pdf = Pdf::loadview('deposit_reguler_historyCard', $data);

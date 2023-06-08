@@ -106,8 +106,8 @@ class gymController extends Controller
         //validate form
         $validator = Validator::make($request->all(), [
             'capacity' => 'required|integer',
-            'start_gym' => 'required|date_format:H:i',
-            'end_gym' => 'required|date_format:H:i|after:start_gym'
+            'start_gym' => 'required',
+            'end_gym' => 'required|after:start_gym'
         ]);
 
         //response error validation

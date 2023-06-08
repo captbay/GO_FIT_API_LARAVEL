@@ -16,12 +16,14 @@ class jadwal_umumController extends Controller
      */
     public function index()
     {
-        $jadwal_umum = jadwal_umum::orderBy('day_name', 'ASC')->with(['instruktur', 'class_detail'])->get();
+        $jadwalUmum = jadwal_umum::orderByRaw("FIELD(day_name, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_class ASC")
+            ->with(['instruktur', 'class_detail'])
+            ->get();
 
         return response()->json([
             'success' => true,
             'message' => 'List Data jadwal_umum',
-            'data'    => $jadwal_umum
+            'data'    => $jadwalUmum
         ], 200);
     }
 
@@ -59,7 +61,7 @@ class jadwal_umumController extends Controller
         $jadwal_umum_temp = jadwal_umum::all();
         foreach ($jadwal_umum_temp as $jadwal_umum_temp) {
             //intruktur = class = date = start_class 
-            if ($jadwal_umum_temp['id_instruktur'] == $request->id_instruktur && $jadwal_umum_temp['id_class_detail'] == $request->id_class_detail  && $jadwal_umum_temp['start_class'] == $request->start_class && $jadwal_umum_temp['day_name'] == $request->day_name) {
+            if ($jadwal_umum_temp['id_instruktur'] == $request->id_instruktur && $jadwal_umum_temp['id_class_detail'] == $request->id_class_detail  && $jadwal_umum_temp['start_class'] == $start_class && $jadwal_umum_temp['day_name'] == $request->day_name) {
                 return response()->json([
                     'success' => false,
                     'message' => 'jadwal yang anda input sudah ada',
@@ -69,12 +71,12 @@ class jadwal_umumController extends Controller
             else if ($jadwal_umum_temp['id_instruktur'] == $request->id_instruktur  && $jadwal_umum_temp['start_class'] == $start_class && $jadwal_umum_temp['day_name'] == $request->day_name) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'instruktur tersebut sudah ada di jadwal yang anda input',
+                    'message' => 'instruktur tersebut sudah ada jadwal di jadwal yang anda input',
                 ], 409);
             }
         }
 
-        $jadwal_umum = jadwal_umum::firstOrCreate([
+        $jadwal_umum = jadwal_umum::create([
             'id_instruktur' => $request->id_instruktur,
             'id_class_detail' => $request->id_class_detail,
             'start_class' => $start_class,
@@ -139,7 +141,7 @@ class jadwal_umumController extends Controller
         $validator = Validator::make($request->all(), [
             'id_instruktur' => 'required',
             'id_class_detail' => 'required',
-            'start_class' => 'required|date_format:H:i',
+            'start_class' => 'required',
             'capacity' => 'required|integer',
             'day_name' => 'required',
         ]);
@@ -156,7 +158,7 @@ class jadwal_umumController extends Controller
         $end_class = Carbon::parse($start_class)->addHour();
 
         //cek apakah jadwal dan instuktur tersebut sudah ada atau belum
-        $jadwal_umum_temp = jadwal_umum::all();
+        $jadwal_umum_temp = jadwal_umum::whereNotIn('id', [$jadwal_umum->id])->get();
         foreach ($jadwal_umum_temp as $jadwal_umum_temp) {
             //intruktur = class = date = start_class 
             if ($jadwal_umum_temp['id_instruktur'] == $request->id_instruktur && $jadwal_umum_temp['id_class_detail'] == $request->id_class_detail  && $jadwal_umum_temp['start_class'] == $request->start_class && $jadwal_umum_temp['day_name'] == $request->day_name) {

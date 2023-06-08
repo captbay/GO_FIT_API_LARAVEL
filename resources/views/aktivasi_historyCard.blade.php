@@ -15,15 +15,6 @@
     <title>Aktivasi GoFit for {{ $member->name }}</title>
 
     <style>
-        body {
-            margin-top: 20px;
-            background: #eee;
-        }
-
-        .invoice {
-            padding: 30px;
-        }
-
         .invoice h2 {
             margin-top: 0px;
             line-height: 0.8em;
@@ -158,6 +149,11 @@
                         <div class="row">
                             <div class="col-md-12 text-right identity">
                                 <p>Kasir :<br><strong>{{ $pegawai->no_pegawai}} / {{$pegawai->name }}</strong></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right identity">
+                                <p>Print date : <strong>{{ $dateTime }}</strong></p>
                             </div>
                         </div>
                     </div>

@@ -12,18 +12,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <title>Deposit Cash for {{ $member->name }}</title>
+    <title>Deposit Package for {{ $member->name }}</title>
 
     <style>
-        body {
-            margin-top: 20px;
-            background: #eee;
-        }
-
-        .invoice {
-            padding: 30px;
-        }
-
         .invoice h2 {
             margin-top: 0px;
             line-height: 0.8em;
@@ -105,7 +96,7 @@
                             <div class="col-xs-6">
                                 <address>
                                     <strong>Payment Method:</strong><br>
-                                    Cash<br>
+                                    Deposit Reguler<br>
                                 </address>
                             </div>
                             <div class="col-xs-6 text-right">
@@ -133,8 +124,7 @@
                                     <tbody>
                                         <tr>
                                             <td>1</td>
-                                            <td><strong>Deposit Package</strong><br>Menambahkan deposit package kedalam saldo paket kelas
-                                                member aktif sejumlah yang di topup.</td>
+                                            <td><strong>Deposit Package</strong><br>Menambahkan saldo paket kelas sejumlah yang di topup.</td>
                                             @if ($deposit_package_history->id_promo_class!=NULL)
                                             <td class="text-center">bayar {{$promo_class->jumlah_sesi}} gratis {{$promo_class->bonus_sesi}} <br> @currency($class_detail->price) X {{$promo_class->jumlah_sesi}} <br> @currency($deposit_package_history->total_price) </td>
                                             <td class="text-center">{{$class_detail->name}}</td>
@@ -167,6 +157,11 @@
                         <div class="row">
                             <div class="col-md-12 text-right identity">
                                 <p>Kasir :<br><strong>{{ $pegawai->no_pegawai}} / {{$pegawai->name }}</strong></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right identity">
+                                <p>Print date : <strong>{{ $dateTime }}</strong></p>
                             </div>
                         </div>
                     </div>
