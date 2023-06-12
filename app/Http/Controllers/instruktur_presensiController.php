@@ -91,7 +91,7 @@ class instruktur_presensiController extends Controller
             ], 409);
         }
 
-        if ($request->end_class < $instruktur_presensi->class_running->start_class) {
+        if ($request->end_class < Carbon::parse($instruktur_presensi->class_running->start_class)->format('H:i')) {
             return response()->json([
                 'success' => false,
                 'message' => 'end class must be greater than start class',
@@ -175,12 +175,12 @@ class instruktur_presensiController extends Controller
             ], 409);
         }
 
-        if ($request->start_class < $instruktur_presensi->class_running->start_class) {
+        if ($request->start_class < Carbon::parse($instruktur_presensi->class_running->start_class)->format('H:i')) {
             return response()->json([
                 'success' => false,
                 'message' => 'your input must be greater than start class already scheduled',
             ], 409);
-        } else if ($request->start_class > $instruktur_presensi->class_running->end_class) {
+        } else if ($request->start_class > Carbon::parse($instruktur_presensi->class_running->end_class)->format('H:i')) {
             return response()->json([
                 'success' => false,
                 'message' => 'start class must be less than end class || YOU SO LATE!!',
