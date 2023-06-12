@@ -111,7 +111,7 @@ class aktivasi_historyController extends Controller
                 'date_time' => $aktivasi_history->date_time,
                 'name_activity' => 'Aktivasi Membership',
                 'no_activity' => $aktivasi_history->no_aktivasi_history,
-                'price_activity' => 'Rp.' . $aktivasi_history->price,
+                'price_activity' => 'Rp.' . number_format($aktivasi_history->price, 0, ',', '.'),
             ]);
 
             //pembuatan report income

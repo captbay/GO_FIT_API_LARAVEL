@@ -20,15 +20,21 @@ class instruktur_presensiController extends Controller
     {
         $instruktur_presensi = instruktur_presensi::with(['instruktur', 'class_running.jadwal_umum.class_detail'])->get();
 
-        // Get the start and end dates for the current week
-        $WeekStart = Carbon::now()->copy()->startOfWeek(Carbon::SUNDAY);
-        $WeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SATURDAY);
+        // // Get the start and end dates for the current week
+        // $WeekStart = Carbon::now()->copy()->startOfWeek(Carbon::SUNDAY);
+        // $WeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SATURDAY);
+
+        //date now
+        $dateNow = Carbon::now()->format('Y-m-d');
 
         $temp = [];
         //cek kondisi dimana antara week sekarang aja
         foreach ($instruktur_presensi as $value) {
-            $classDate = Carbon::parse($value->class_running->date);
-            if ($classDate->isBetween($WeekStart, $WeekEnd)) {
+            $classDate = Carbon::parse($value->class_running->date)->format('Y-m-d');
+            // if ($classDate->isBetween($WeekStart, $WeekEnd)) {
+            //     array_push($temp, $value);
+            // }
+            if ($classDate == $dateNow) {
                 array_push($temp, $value);
             }
         }
@@ -112,7 +118,7 @@ class instruktur_presensiController extends Controller
                 'id_instruktur' => $instruktur_presensi->id_instruktur,
                 'date_time' => $dateTimeNow,
                 'name_activity' => 'Instruktur Presensi End Class',
-                'description_activity' => 'Presensi End Class di kelas ' . $instruktur_presensi->class_running->jadwal_umum->class_detail->name . ' Tgl Class ' . $instruktur_presensi->class_running->date,
+                'description_activity' => 'Presensi End Class di kelas ' . $instruktur_presensi->class_running->jadwal_umum->class_detail->name . ' - ' . $instruktur_presensi->class_running->day_name . ' - ' . $instruktur_presensi->class_running->start_class . ', Tgl Class : ' . $instruktur_presensi->class_running->date,
             ]);
 
             return response()->json([
@@ -214,7 +220,7 @@ class instruktur_presensiController extends Controller
                 'id_instruktur' => $instruktur_presensi->id_instruktur,
                 'date_time' => $dateTimeNow,
                 'name_activity' => 'Instruktur Presensi Start Class',
-                'description_activity' => 'Presensi Start Class di kelas ' . $instruktur_presensi->class_running->jadwal_umum->class_detail->name . ' Tgl Class ' . $instruktur_presensi->class_running->date,
+                'description_activity' => 'Presensi Start Class di kelas ' . $instruktur_presensi->class_running->jadwal_umum->class_detail->name . ' - ' . $instruktur_presensi->class_running->day_name . ' - ' . $instruktur_presensi->class_running->start_class . ', Tgl Class : ' . $instruktur_presensi->class_running->date,
             ]);
 
             return response()->json([

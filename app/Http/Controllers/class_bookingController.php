@@ -313,7 +313,7 @@ class class_bookingController extends Controller
                     'date_time' => $class_history->date_time,
                     'name_activity' => 'Booking Class with Cash',
                     'no_activity' => $class_history->no_class_history,
-                    'price_activity' => '- Rp.' . $uangBerkurang,
+                    'price_activity' => '- Rp.' . number_format($uangBerkurang, 0, ',', '.'),
                 ]);
 
                 return response()->json([

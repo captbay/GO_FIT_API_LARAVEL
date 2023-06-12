@@ -130,7 +130,7 @@ class deposit_reguler_historyController extends Controller
                 'date_time' => $deposit_reguler_history->date_time,
                 'name_activity' => 'Top Up Cash',
                 'no_activity' => $deposit_reguler_history->no_deposit_reguler_history,
-                'price_activity' => '+ Rp.' . $deposit_reguler_history->topup_amount,
+                'price_activity' => '+ Rp.' . number_format($deposit_reguler_history->topup_amount, 0, ',', '.'),
             ]);
 
             //pembuatan report income

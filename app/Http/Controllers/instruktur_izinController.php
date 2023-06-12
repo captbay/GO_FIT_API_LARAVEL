@@ -6,6 +6,7 @@ use App\Models\class_running;
 use App\Models\instruktur;
 use App\Models\instruktur_activity;
 use App\Models\instruktur_izin;
+use App\Models\instruktur_presensi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -276,13 +277,18 @@ class instruktur_izinController extends Controller
             'status' => $statusTemp,
         ]);
 
+        $instruktur_presensi = instruktur_presensi::where('id_instruktur', $instruktur_izin->id_instruktur)->where('id_class_running', $class_running->id)->first();
+        $instruktur_presensi->update([
+            'id_instruktur' => $instrukturPengganti->id,
+        ]);
+
         $dateTimeNow = Carbon::now();
 
         instruktur_activity::create([
             'id_instruktur' => $instruktur_izin->id_instruktur,
             'date_time' => $dateTimeNow,
             'name_activity' => 'Instruktur izin',
-            'description_activity' => 'Izin di kelas ' . $class_running->jadwal_umum->class_detail->name . ' Tgl Class ' . $class_running->date,
+            'description_activity' => 'Izin di kelas ' . $class_running->jadwal_umum->class_detail->name . ' - ' . $class_running->day_name . ' - ' . $class_running->start_class . ', Tgl Class : ' . $class_running->date,
         ]);
 
         return response()->json([

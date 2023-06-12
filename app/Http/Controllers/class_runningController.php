@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\class_running;
+use App\Models\instruktur_presensi;
 use App\Models\jadwal_umum;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
@@ -42,11 +43,88 @@ class class_runningController extends Controller
 
         $class_running = class_running::where('date', '>=', $WeekStart)->where('date', '<=', $WeekEnd)->where('id_instruktur', $id_instruktur)->orderBy('date', 'ASC')->with(['jadwal_umum.instruktur', 'jadwal_umum.class_detail', 'instruktur'])->get();
 
+        // Get the IDs of class_running
+        $classRunningIds = $class_running->pluck('id');
+
+        //show instruktur_presensi base on id_instruktur and id_class_running
+        $instruktur_presensi = instruktur_presensi::whereIn('id_class_running', $classRunningIds)
+            ->where('id_instruktur', $id_instruktur)
+            ->get();
+
+        // Merge the data of $instruktur_presensi into $class_running
+        $class_running = $class_running->map(function ($item) use ($instruktur_presensi) {
+            $presensi = $instruktur_presensi->where('id_class_running', $item->id)->first();
+            $item->presensi = $presensi;
+            return $item;
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'List Data class_running',
             'data'    => $class_running
         ], 200);
+    }
+
+    // function untuk mengecek apakah class_running date sudah ada di tanggal minggu ini
+    private function checkDateThisWeek()
+    {
+        $class_running_list = class_running::all();
+
+        $nextWeekStart = Carbon::now()->copy()->startOfWeek(Carbon::MONDAY);
+        $nextWeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SUNDAY);
+
+        $nextWeek = CarbonPeriod::create($nextWeekStart, $nextWeekEnd);
+
+        foreach ($class_running_list as $class_running) {
+            foreach ($nextWeek as $nextWeekTemp) {
+                if (Carbon::parse($nextWeekTemp)->isSameDay(Carbon::parse($class_running->date))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //function untuk mengecek apakah class_running sudah ada di tanggal minggu depan
+    private function checkDateNextWeek()
+    {
+        $class_running_list = class_running::all();
+
+        $nextWeekStart = Carbon::now()->copy()->startOfWeek(Carbon::MONDAY)->addWeek();
+        $nextWeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SUNDAY)->addWeek();
+
+        $nextWeek = CarbonPeriod::create($nextWeekStart, $nextWeekEnd);
+
+        foreach ($class_running_list as $class_running) {
+            foreach ($nextWeek as $nextWeekTemp) {
+                if (Carbon::parse($nextWeekTemp)->isSameDay(Carbon::parse($class_running->date))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //function untuk mengecek apakah ada data jadwal_umum yang belum ada di class_running
+    private function checkIsNotSameData()
+    {
+        $class_running_list = class_running::all();
+        $jadwal_umum_list = jadwal_umum::all();
+
+        // Mengecek apakah id jadwal_umum ada yang belum ada di class_running
+        foreach ($jadwal_umum_list as $jadwal_umum_item) {
+            $found = false;
+            foreach ($class_running_list as $class_running) {
+                if ($jadwal_umum_item->id == $class_running->id_jadwal_umum) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -58,10 +136,72 @@ class class_runningController extends Controller
         $class_running_list = class_running::all();
         $jadwal_umum = jadwal_umum::all();
 
-        $countJadwalUmum = $jadwal_umum->count();
-        $countClassRunning = $class_running_list->count();
+        if ($this->checkIsNotSameData() == true) {
+            foreach ($jadwal_umum as $jadwal_umum_item) {
+                $found = false;
+                foreach ($class_running_list as $class_running) {
+                    if ($jadwal_umum_item->id == $class_running->id_jadwal_umum) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    //get tanggal sekarang dan cari tanggal di minggu ini
+                    $now = Carbon::now();
+                    $weekStartDate = $now->copy()->startOfWeek(Carbon::MONDAY);
 
-        if ($countClassRunning == 0) {
+                    if ($jadwal_umum_item['day_name'] == 'Monday') {
+                        $date = $weekStartDate;
+                    } else if ($jadwal_umum_item['day_name'] == 'Tuesday') {
+                        $date = $weekStartDate->addDays(1);
+                    } else if ($jadwal_umum_item['day_name'] == 'Wednesday') {
+                        $date = $weekStartDate->addDays(2);
+                    } else if ($jadwal_umum_item['day_name'] == 'Thursday') {
+                        $date = $weekStartDate->addDays(3);
+                    } else if ($jadwal_umum_item['day_name'] == 'Friday') {
+                        $date = $weekStartDate->addDays(4);
+                    } else if ($jadwal_umum_item['day_name'] == 'Saturday') {
+                        $date = $weekStartDate->addDays(5);
+                    } else if ($jadwal_umum_item['day_name'] == 'Sunday') {
+                        $date = $weekStartDate->addDays(6);
+                    }
+
+                    $date_fix = Carbon::parse($date)->format('Y-m-d');
+                    $status = '';
+                    $day_name = Carbon::parse($date_fix)->format('l');
+                    // dicek lagi pake date biasa apa date fix
+                    $class_running = class_running::create([
+                        'id_jadwal_umum' => $jadwal_umum_item['id'],
+                        'id_instruktur' => $jadwal_umum_item['id_instruktur'],
+                        'capacity' => $jadwal_umum_item['capacity'],
+                        'start_class' => $jadwal_umum_item['start_class'],
+                        'end_class' => $jadwal_umum_item['end_class'],
+                        'date' => $date_fix,
+                        'day_name' => $day_name,
+                        'status' => $status,
+                    ]);
+
+                    $instruktur_presensi = $class_running->instruktur_presensi()->create([
+                        'id_instruktur' => $class_running['id_instruktur'],
+                    ]);
+                }
+            }
+
+            if ($class_running && $instruktur_presensi) {
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'class_running scheduled add new generated successfully',
+                    'data'    => $class_running,
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'class_running new Failed to generate scheduled',
+                    'data'    => $class_running,
+                ], 409);
+            }
+        } else if ($this->checkDateThisWeek() == false) {
             foreach ($jadwal_umum as $jadwal_umum) {
                 //get tanggal sekarang dan cari tanggal di minggu ini
                 $now = Carbon::now();
@@ -118,109 +258,13 @@ class class_runningController extends Controller
                     'data'    => $class_running_list,
                 ], 409);
             }
-        } else if ($countClassRunning != $countJadwalUmum) {
-            $class_running_list = class_running::all();
-            $jadwal_umum = jadwal_umum::all();
-
-            //menambahkan jadwal umum yang tidak ada saja ke dalam class_running
-            foreach ($jadwal_umum as $jadwal_umum) {
-
-                foreach ($class_running_list as $class_running_already) {
-                    if ($jadwal_umum['id'] != $class_running_already['id_jadwal_umum']) {
-                        //get tanggal sekarang dan cari tanggal di minggu ini
-                        $now = Carbon::now();
-                        $weekStartDate = $now->copy()->startOfWeek(Carbon::MONDAY);
-
-                        if ($jadwal_umum['day_name'] == 'Monday') {
-                            $date = $weekStartDate;
-                        } else if ($jadwal_umum['day_name'] == 'Tuesday') {
-                            $date = $weekStartDate->addDays(1);
-                        } else if ($jadwal_umum['day_name'] == 'Wednesday') {
-                            $date = $weekStartDate->addDays(2);
-                        } else if ($jadwal_umum['day_name'] == 'Thursday') {
-                            $date = $weekStartDate->addDays(3);
-                        } else if ($jadwal_umum['day_name'] == 'Friday') {
-                            $date = $weekStartDate->addDays(4);
-                        } else if ($jadwal_umum['day_name'] == 'Saturday') {
-                            $date = $weekStartDate->addDays(5);
-                        } else if ($jadwal_umum['day_name'] == 'Sunday') {
-                            $date = $weekStartDate->addDays(6);
-                        }
-
-                        $date_fix = Carbon::parse($date)->format('Y-m-d');
-                        $status = '';
-                        $day_name = Carbon::parse($date_fix)->format('l');
-                        // dicek lagi pake date biasa apa date fix
-                        $class_running = class_running::create([
-                            'id_jadwal_umum' => $jadwal_umum['id'],
-                            'id_instruktur' => $jadwal_umum['id_instruktur'],
-                            'capacity' => $jadwal_umum['capacity'],
-                            'start_class' => $jadwal_umum['start_class'],
-                            'end_class' => $jadwal_umum['end_class'],
-                            'date' => $date_fix,
-                            'day_name' => $day_name,
-                            'status' => $status,
-                        ]);
-
-                        $instruktur_presensi = $class_running->instruktur_presensi()->create([
-                            'id_instruktur' => $class_running['id_instruktur'],
-                        ]);
-                    }
-                }
-            }
-
-            if ($class_running && $instruktur_presensi) {
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'class_running scheduled add new generated successfully',
-                    'data'    => $class_running,
-                ], 201);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'class_running Failed to generate scheduled',
-                    'data'    => $class_running,
-                ], 409);
-            }
-        } else {
+        } else if ($this->checkDateNextWeek() == false) {
             $class_running_list = class_running::all();
             $jadwal_umum = jadwal_umum::all();
 
             $now = Carbon::now();
 
-            $nextWeekStart = Carbon::now()->copy()->startOfWeek(Carbon::MONDAY);
-            $nextWeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SUNDAY);
-
-            $nextWeek = CarbonPeriod::create($nextWeekStart, $nextWeekEnd);
-
-            foreach ($class_running_list as $class_running) {
-                foreach ($nextWeek as $nextWeekTemp) {
-                    if (Carbon::parse($nextWeekTemp)->isSameDay(Carbon::parse($class_running->date))) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Already generated for this week.',
-                        ], 409);
-                    }
-                }
-            }
-
             if ($now->isSunday() && $now->hour >= 10) {
-                $nextWeekStart = Carbon::now()->copy()->startOfWeek(Carbon::MONDAY)->addWeek();
-                $nextWeekEnd = Carbon::now()->copy()->endOfWeek(Carbon::SUNDAY)->addWeek();
-
-                $nextWeek = CarbonPeriod::create($nextWeekStart, $nextWeekEnd);
-
-                foreach ($class_running_list as $class_running) {
-                    foreach ($nextWeek as $nextWeekTemp) {
-                        if (Carbon::parse($nextWeekTemp)->isSameDay(Carbon::parse($class_running->date))) {
-                            return response()->json([
-                                'success' => false,
-                                'message' => 'Already generated for next week.',
-                            ], 409);
-                        }
-                    }
-                }
 
                 foreach ($jadwal_umum as $jadwal_umum) {
                     //get tanggal sekarang dan cari tanggal di minggu ini
@@ -281,12 +325,30 @@ class class_runningController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'The schedule for the next week has already been generated. You Can Regenerate it at sunday after 10 AM :).',
+                    'message' => 'The schedule for the this week has already been generated. You Can Regenerate it at sunday after 10 AM :).',
                     'data'    => $class_running_list,
                 ], 409);
             }
+        } else if ($this->checkDateThisWeek() == true) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Already generated for this week.',
+            ], 409);
+        } else if ($this->checkDateNextWeek() == true) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Already generated for next week.',
+            ], 409);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'class_running Failed to generate scheduled',
+                'data'    => $class_running_list,
+            ], 409);
         }
     }
+
+
 
     /**
      * update when class is not available.
